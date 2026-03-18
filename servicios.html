@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Servicios — ConectaTuMundo</title>
+  <meta name="description" content="Servicios digitales para emprendedores, comercios y particulares en Uruguay. Sitios web, dashboards, trámites y más."/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf8fc; --warm: #f0ebf7; --earth: #a78bbf;
+      --forest: #6d28d9; --forest-light: #7c3aed;
+      --ink: #1a1020; --muted: #6b5b7a;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Outfit', sans-serif;
+      --pad: 1.25rem;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--ink); font-family: var(--sans); overflow-x: hidden; }
+
+    /* NOISE */
+    body::after { content: ''; position: fixed; inset: 0; z-index: -1; opacity: 0.02; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 200px; pointer-events: none; }
+
+    /* SCROLL PROGRESS */
+    .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--forest), #a855f7, var(--forest-light)); z-index: 300; transition: width 0.08s linear; border-radius: 0 2px 2px 0; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem var(--pad); background: rgba(250,248,252,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(167,139,191,0.2); transition: box-shadow 0.3s; }
+    nav.scrolled { box-shadow: 0 4px 30px rgba(109,40,217,0.1); }
+    .logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .logo img { height: 38px; width: auto; }
+    .logo-text { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .logo-text span { color: var(--forest-light); }
+    .nav-links { display: flex; gap: 0.4rem; align-items: center; }
+    .nav-links a { font-size: 0.82rem; font-weight: 500; color: var(--muted); text-decoration: none; padding: 0.4rem 0.6rem; border-radius: 8px; transition: color 0.2s; display: none; }
+    .nav-links a:hover { color: var(--forest); }
+    .nav-cta { background: var(--forest) !important; color: white !important; display: block !important; padding: 0.55rem 1.1rem !important; border-radius: 100px !important; font-weight: 600 !important; font-size: 0.8rem !important; }
+
+    /* TICKER */
+    .ticker-wrap { background: var(--forest); overflow: hidden; padding: 1.1rem 0; position: relative; margin-top: 60px; }
+    .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--forest) 30%, transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--forest) 30%, transparent); }
+    .ticker-track { display: flex; width: max-content; animation: ticker 30s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item { display: inline-flex; align-items: center; gap: 0.65rem; white-space: nowrap; padding: 0 2.25rem; color: rgba(255,255,255,0.9); font-size: 0.88rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .ticker-item .material-symbols-outlined { font-size: 1.1rem; font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20; color: rgba(255,255,255,0.6); }
+    .ticker-sep { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.3); flex-shrink: 0; }
+
+    /* HERO */
+    .hero { padding: 4rem var(--pad) 3rem; background: linear-gradient(160deg, var(--cream) 0%, var(--warm) 100%); position: relative; overflow: hidden; }
+    .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(109,40,217,0.07) 0%, transparent 70%); border-radius: 50%; }
+    .particles-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .hero-inner { position: relative; z-index: 2; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--forest); background: rgba(109,40,217,0.08); border: 1px solid rgba(109,40,217,0.15); padding: 0.3rem 0.9rem; border-radius: 100px; margin-bottom: 1.2rem; }
+    .hero h1 { font-family: var(--serif); font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 900; line-height: 1.08; margin-bottom: 1rem; }
+    .hero h1 em { font-style: italic; color: var(--forest); }
+    .hero p { font-size: 0.95rem; color: var(--muted); line-height: 1.8; }
+
+    /* STATS BAR */
+    .stats-bar { background: var(--ink); display: flex; overflow: hidden; position: relative; }
+    .stats-bar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(109,40,217,0.18) 0%, transparent 55%); }
+    .stat-item { flex: 1; text-align: center; padding: 1.75rem 1rem; border-right: 1px solid rgba(255,255,255,0.07); position: relative; z-index: 1; }
+    .stat-item:last-child { border-right: none; }
+    .stat-value { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: white; line-height: 1; margin-bottom: 0.3rem; }
+    .stat-value span { color: #c4b5fd; }
+    .stat-label { font-size: 0.68rem; color: rgba(255,255,255,0.38); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* SECCIÓN BASE */
+    section { padding: 3.5rem var(--pad); }
+    .sec-eyebrow { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.5rem; }
+    .sec-title { font-family: var(--serif); font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 0.75rem; }
+    .sec-title em { font-style: italic; color: var(--forest); }
+    .sec-intro { font-size: 0.9rem; color: var(--muted); line-height: 1.8; margin-bottom: 2rem; }
+
+    /* CARDS */
+    .srv-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    .srv-card { background: white; border-radius: 18px; padding: 1.5rem; border: 1px solid rgba(167,139,191,0.18); display: flex; flex-direction: column; gap: 0.75rem; opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s, box-shadow 0.3s; }
+    .srv-card.visible { opacity: 1; transform: none; }
+    .srv-card:hover { box-shadow: 0 16px 50px rgba(109,40,217,0.09); }
+    .srv-top { display: flex; align-items: flex-start; gap: 0.9rem; }
+    .srv-icon { width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--warm); transition: background 0.3s, transform 0.3s; }
+    .srv-icon .material-symbols-outlined { font-size: 1.3rem; color: var(--forest); }
+    .srv-card:hover .srv-icon { background: var(--forest); transform: scale(1.08) rotate(-4deg); }
+    .srv-card:hover .srv-icon .material-symbols-outlined { color: white; }
+    .srv-icon.dark { background: var(--ink); }
+    .srv-icon.dark .material-symbols-outlined { color: white; }
+    .srv-card:hover .srv-icon.dark { background: var(--forest); }
+    .srv-icon.purple { background: linear-gradient(135deg, var(--forest), var(--forest-light)); }
+    .srv-icon.purple .material-symbols-outlined { color: white; }
+    .srv-name { font-family: var(--serif); font-size: 1.05rem; font-weight: 900; line-height: 1.2; }
+    .srv-badge { display: inline-block; margin-top: 0.2rem; font-size: 0.57rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 100px; }
+    .badge-hot { background: rgba(109,40,217,0.1); color: var(--forest); }
+    .badge-gratis { background: #dcfce7; color: #15803d; }
+    .srv-desc { font-size: 0.84rem; color: var(--muted); line-height: 1.75; }
+    .srv-feats { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .srv-feats li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.81rem; color: var(--ink); line-height: 1.5; }
+    .srv-feats li::before { content: '✓'; color: var(--forest); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .srv-btn { margin-top: 0.25rem; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--forest); text-decoration: none; padding: 0.5rem 1rem; border-radius: 100px; background: rgba(109,40,217,0.07); transition: background 0.2s, gap 0.2s; align-self: flex-start; }
+    .srv-btn:hover { background: rgba(109,40,217,0.13); gap: 0.6rem; }
+
+    /* FEATURED & VARIANTS */
+    .srv-card.featured { background: linear-gradient(150deg, var(--forest) 0%, var(--forest-light) 100%); border-color: transparent; }
+    .srv-card.featured .srv-name, .srv-card.featured .srv-feats li { color: white; }
+    .srv-card.featured .srv-desc { color: rgba(255,255,255,0.65); }
+    .srv-card.featured .srv-feats li::before { color: #a7f3d0; }
+    .srv-card.featured .srv-icon { background: rgba(255,255,255,0.15); }
+    .srv-card.featured .srv-icon .material-symbols-outlined { color: white; }
+    .srv-card.featured:hover .srv-icon { background: rgba(255,255,255,0.28); }
+    .srv-card.featured .srv-btn { background: white; color: var(--forest); }
+    .srv-card.gratis { border: 2px dashed rgba(109,40,217,0.3); background: rgba(109,40,217,0.02); }
+    .srv-card.dark { background: linear-gradient(135deg, #1a1020, #2e1065); border-color: transparent; }
+    .srv-card.dark .srv-name, .srv-card.dark .srv-feats li { color: white; }
+    .srv-card.dark .srv-desc { color: rgba(255,255,255,0.5); }
+    .srv-card.dark .srv-feats li::before { color: #c4b5fd; }
+    .srv-card.dark .srv-icon { background: rgba(255,255,255,0.08); }
+    .srv-card.dark .srv-btn { background: rgba(255,255,255,0.1); color: white; }
+
+    /* PROCESO */
+    .proceso-bg { background: var(--ink); }
+    .proceso-bg .sec-eyebrow { color: #c4b5fd; }
+    .proceso-bg .sec-title { color: white; }
+    .proceso-bg .sec-intro { color: rgba(255,255,255,0.45); }
+    .steps { display: flex; flex-direction: column; }
+    .step { display: flex; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.07); opacity: 0; transform: translateX(-10px); transition: opacity 0.5s, transform 0.5s; }
+    .step.visible { opacity: 1; transform: none; }
+    .step:last-child { border-bottom: none; }
+    .step-num { font-family: var(--serif); font-size: 1.8rem; font-weight: 900; color: rgba(255,255,255,0.07); line-height: 1; flex-shrink: 0; width: 40px; text-align: right; }
+    .step-title { font-weight: 700; color: white; font-size: 0.92rem; margin-bottom: 0.25rem; }
+    .step-desc { font-size: 0.8rem; color: rgba(255,255,255,0.42); line-height: 1.7; }
+
+    /* AUDIENCIAS */
+    .aud-bg { background: var(--warm); }
+    .aud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .aud-card { background: white; border-radius: 16px; padding: 1.1rem 0.9rem; border: 1px solid rgba(167,139,191,0.15); text-align: center; opacity: 0; transform: translateY(10px); transition: opacity 0.4s, transform 0.4s, box-shadow 0.3s; }
+    .aud-card.visible { opacity: 1; transform: none; }
+    .aud-card:hover { box-shadow: 0 8px 30px rgba(109,40,217,0.08); }
+    .aud-emoji { font-size: 1.7rem; margin-bottom: 0.45rem; }
+    .aud-emoji .material-symbols-outlined { font-size: 1.7rem; }
+    .aud-name { font-weight: 700; font-size: 0.83rem; margin-bottom: 0.2rem; }
+    .aud-desc { font-size: 0.71rem; color: var(--muted); line-height: 1.5; }
+    .aud-card.span2 { grid-column: 1 / -1; background: rgba(109,40,217,0.04); border: 1.5px dashed rgba(109,40,217,0.25); }
+    .aud-card.night { background: linear-gradient(135deg,#1a1020,#2e1065); border-color: transparent; }
+    .aud-card.night .aud-name { color: white; }
+    .aud-card.night .aud-desc { color: rgba(255,255,255,0.45); }
+
+    /* FAQ */
+    .faq-list { display: flex; flex-direction: column; gap: 0.7rem; }
+    .faq-item { background: white; border-radius: 14px; border: 1px solid rgba(167,139,191,0.15); overflow: hidden; }
+    .faq-q { padding: 1rem 1.2rem; font-weight: 600; font-size: 0.87rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 0.75rem; user-select: none; }
+    .faq-icon { color: var(--forest); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.3s; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a { font-size: 0.81rem; color: var(--muted); line-height: 1.75; padding: 0 1.2rem; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s; }
+    .faq-item.open .faq-a { max-height: 200px; padding: 0 1.2rem 1rem; }
+
+    /* CTA FINAL */
+    .cta-final { background: linear-gradient(135deg, var(--forest), var(--forest-light)); padding: 3.5rem var(--pad); text-align: center; }
+    .cta-final h2 { font-family: var(--serif); font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 900; color: white; margin-bottom: 0.75rem; line-height: 1.1; }
+    .cta-final p { font-size: 0.9rem; color: rgba(255,255,255,0.65); margin-bottom: 1.75rem; line-height: 1.7; }
+    .btn-white { display: inline-block; background: white; color: var(--forest); padding: 0.9rem 2rem; border-radius: 100px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-white:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); }
+
+    /* FOOTER */
+    footer { background: var(--ink); padding: 2rem var(--pad); display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+    footer .logo-text { color: white; }
+    .f-links { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; }
+    .f-links a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 0.77rem; transition: color 0.2s; }
+    .f-links a:hover { color: white; }
+    footer small { font-size: 0.72rem; color: rgba(255,255,255,0.25); }
+
+    /* MATERIAL ICONS */
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; line-height: 1; }
+    .icon-filled { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* TABLET+ */
+    @media (min-width: 600px) {
+      :root { --pad: 2rem; }
+      .srv-grid { grid-template-columns: 1fr 1fr; }
+      .stats-bar .stat-item { padding: 2rem 1rem; }
+    }
+    @media (min-width: 960px) {
+      :root { --pad: 4rem; }
+      nav { padding: 1.2rem var(--pad); }
+      .nav-links a { display: block; }
+      .nav-cta { font-size: 0.85rem !important; padding: 0.6rem 1.5rem !important; }
+      .srv-grid { grid-template-columns: repeat(3, 1fr); }
+      .aud-grid { grid-template-columns: repeat(3, 1fr); }
+      .aud-card.span2 { grid-column: auto; }
+      footer { flex-direction: row; justify-content: space-between; text-align: left; }
+    }
+    @media (max-width: 599px) {
+      .stats-bar { flex-wrap: wrap; }
+      .stat-item { flex: 1 1 50%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollBar"></div>
+
+<nav id="mainNav">
+  <a href="index.html" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo"/>
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="servicios.html" style="color:var(--forest);">Servicios</a>
+    <a href="trabajos.html">Trabajos</a>
+    <a href="contacto.html">Contacto</a>
+    <a href="contacto.html" class="nav-cta">Consultá gratis</a>
+  </div>
+</nav>
+
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Diseño web profesional</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Dashboards para pymes</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Trámites digitales</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Orientación laboral</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Hosting gratuito</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Primera consulta gratis</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Auditoría de huella digital</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Diseño web profesional</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Dashboards para pymes</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Trámites digitales</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Orientación laboral</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Hosting gratuito</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Primera consulta gratis</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Auditoría de huella digital</span><span class="ticker-sep"></span>
+  </div>
+</div>
+
+<div class="hero">
+  <canvas class="particles-canvas" id="heroCanvas"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Nuestros servicios</div>
+    <h1>Todo lo que necesitás<br/>para estar <em>online.</em></h1>
+    <p>Soluciones digitales reales para emprendedores, comercios y particulares en Uruguay. Sin tecnicismos, sin vueltas.</p>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-value"><span class="count-up" data-target="6">0</span></div>
+    <div class="stat-label">Servicios disponibles</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value"><span class="count-up" data-target="5">0</span><span>+</span></div>
+    <div class="stat-label">Proyectos entregados</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value"><span class="count-up" data-target="100">0</span><span>%</span></div>
+    <div class="stat-label">Satisfacción garantizada</div>
+  </div>
+</div>
+
+<!-- 1. SITIOS WEB -->
+<section id="web">
+  <div class="sec-eyebrow">Presencia digital</div>
+  <div class="sec-title">Sitios web y<br/><em>landing pages</em></div>
+  <p class="sec-intro">Tu negocio merece una web que transmita confianza desde el primer segundo. Nos encargamos de todo.</p>
+  <div class="srv-grid">
+    <div class="srv-card featured reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">language</span></div>
+        <div>
+          <div class="srv-name">Landing page profesional</div>
+          <span class="srv-badge" style="background:rgba(255,255,255,0.18);color:white;">Más solicitado</span>
+        </div>
+      </div>
+      <p class="srv-desc">Una página que presenta tu negocio, genera confianza y convierte visitas en clientes. Diseño personalizado para tu rubro.</p>
+      <ul class="srv-feats">
+        <li>Diseño único para tu marca y rubro</li>
+        <li>Dominio .com incluido</li>
+        <li>Hosting gratuito en Vercel</li>
+        <li>Botón WhatsApp integrado</li>
+        <li>Optimizado 100% para celular</li>
+        <li>6 revisiones incluidas sin costo</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Quiero esto <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">shopping_bag</span></div>
+        <div><div class="srv-name">Catálogo digital con WhatsApp</div></div>
+      </div>
+      <p class="srv-desc">Mostrás tus productos con fotos y descripciones. El cliente elige y te escribe directo al WhatsApp. Simple y efectivo.</p>
+      <ul class="srv-feats">
+        <li>Catálogo visual de productos</li>
+        <li>Enlace directo a WhatsApp por producto</li>
+        <li>Fácil de actualizar</li>
+        <li>Sin necesidad de pasarela de pagos</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon purple"><span class="material-symbols-outlined">trending_up</span></div>
+        <div><div class="srv-name">SEO y Google My Business</div></div>
+      </div>
+      <p class="srv-desc">Que te encuentren cuando te buscan. Configuramos tu presencia en Google para que aparezcas en búsquedas locales.</p>
+      <ul class="srv-feats">
+        <li>Google My Business configurado</li>
+        <li>Palabras clave para tu rubro</li>
+        <li>Google Analytics incluido</li>
+        <li>Velocidad de carga optimizada</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 2. DASHBOARDS -->
+<section id="dashboards" style="background:var(--warm);">
+  <div class="sec-eyebrow">Para negocios</div>
+  <div class="sec-title">Dashboards y<br/><em>control de tu pyme</em></div>
+  <p class="sec-intro">Si perdés tiempo en papeles y planillas desordenadas, te ayudamos a tener el control de tu negocio en un vistazo.</p>
+  <div class="srv-grid">
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon dark"><span class="material-symbols-outlined">bar_chart</span></div>
+        <div><div class="srv-name">Dashboard de ventas</div></div>
+      </div>
+      <p class="srv-desc">Tablero en Excel o Power BI con tus ventas diarias, semanales y mensuales. Tomás mejores decisiones con datos claros.</p>
+      <ul class="srv-feats">
+        <li>Ventas por período y producto</li>
+        <li>Gráficos automáticos</li>
+        <li>Comparativas de rendimiento</li>
+        <li>Capacitación incluida</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon dark"><span class="material-symbols-outlined">inventory_2</span></div>
+        <div><div class="srv-name">Control de stock e inventario</div></div>
+      </div>
+      <p class="srv-desc">Sistema de inventario en Excel que te avisa cuando el stock baja. Nunca más te quedás sin productos sin saberlo.</p>
+      <ul class="srv-feats">
+        <li>Registro de entradas y salidas</li>
+        <li>Alertas de stock mínimo</li>
+        <li>Historial de movimientos</li>
+        <li>Usable desde el celular</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon dark"><span class="material-symbols-outlined">payments</span></div>
+        <div><div class="srv-name">Control de caja y rentabilidad</div></div>
+      </div>
+      <p class="srv-desc">Sabé exactamente cuánto ganás, cuánto gastás y qué productos son los más rentables.</p>
+      <ul class="srv-feats">
+        <li>Ingresos y egresos diarios</li>
+        <li>Rentabilidad por producto</li>
+        <li>Cierre de caja automático</li>
+        <li>Exportable a PDF</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. PERSONAS -->
+<section id="personas">
+  <div class="sec-eyebrow">Para personas</div>
+  <div class="sec-title">Trámites, orientación<br/>y <em>acompañamiento</em></div>
+  <p class="sec-intro">Tecnología accesible para todos. Adultos mayores, estudiantes y quienes quieren emprender.</p>
+  <div class="srv-grid">
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">elderly</span></div>
+        <div><div class="srv-name">Trámites digitales para adultos mayores</div></div>
+      </div>
+      <p class="srv-desc">BPS, DGI, ANTEL, bancos, FONASA. Te ayudamos a hacer los trámites online sin complicaciones y con toda la paciencia.</p>
+      <ul class="srv-feats">
+        <li>Jubilaciones y certificados BPS</li>
+        <li>Gestiones DGI y SUCIVE</li>
+        <li>Homebanking y transferencias</li>
+        <li>Atención a domicilio en Maldonado</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">school</span></div>
+        <div><div class="srv-name">Orientación laboral para estudiantes</div></div>
+      </div>
+      <p class="srv-desc">Para los que salen al mercado laboral. CV profesional, LinkedIn optimizado y preparación para entrevistas reales.</p>
+      <ul class="srv-feats">
+        <li>CV adaptado al puesto que buscás</li>
+        <li>Perfil LinkedIn con impacto</li>
+        <li>Simulación de entrevistas</li>
+        <li>Dónde y cómo buscar trabajo en Uruguay</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card gratis reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">lightbulb</span></div>
+        <div>
+          <div class="srv-name">Quiero emprender</div>
+          <span class="srv-badge badge-gratis">Completamente gratis</span>
+        </div>
+      </div>
+      <p class="srv-desc">¿Tenés una idea pero no sabés por dónde empezar? Te orientamos con herramientas gratuitas y los primeros pasos reales. Sin costo.</p>
+      <ul class="srv-feats">
+        <li>Validá tu idea sin gastar un peso</li>
+        <li>Herramientas digitales gratuitas</li>
+        <li>Primeros pasos en redes sociales</li>
+        <li>Programas de apoyo en Uruguay (MIEM, INEFOP)</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Escribinos <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 4. REPUTACIÓN -->
+<section id="reputacion" style="background:linear-gradient(160deg,#1a1020 0%,#2e1065 100%);">
+  <div class="sec-eyebrow" style="color:#c4b5fd;">Privacidad</div>
+  <div class="sec-title" style="color:white;">Auditoría de<br/><em style="color:#c4b5fd;">huella digital</em></div>
+  <p class="sec-intro" style="color:rgba(255,255,255,0.45);">¿Sabés qué información tuya circula en internet? Hacemos una revisión completa de tu presencia online.</p>
+  <div class="srv-grid">
+    <div class="srv-card dark reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">manage_search</span></div>
+        <div><div class="srv-name">Revisión de presencia online</div></div>
+      </div>
+      <p class="srv-desc">Buscamos qué aparece sobre vos en Google y redes. Te entregamos un informe detallado con todo lo encontrado.</p>
+      <ul class="srv-feats">
+        <li>Búsqueda en Google y redes sociales</li>
+        <li>Datos personales expuestos detectados</li>
+        <li>Informe escrito con los resultados</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="srv-card dark reveal">
+      <div class="srv-top">
+        <div class="srv-icon"><span class="material-symbols-outlined">shield</span></div>
+        <div><div class="srv-name">Plan de mejora y protección</div></div>
+      </div>
+      <p class="srv-desc">Una vez hecha la auditoría, te decimos exactamente qué hacer para limpiar o proteger tu imagen en internet.</p>
+      <ul class="srv-feats">
+        <li>Pasos concretos a seguir</li>
+        <li>Configuración de privacidad en redes</li>
+        <li>Seguimiento incluido</li>
+      </ul>
+      <a href="contacto.html" class="srv-btn">Consultá <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- 5. CÓMO FUNCIONA -->
+<section id="como" class="proceso-bg">
+  <div class="sec-eyebrow">El proceso</div>
+  <div class="sec-title">Así de simple<br/>es <em>trabajar juntos</em></div>
+  <p class="sec-intro">Sin reuniones eternas, sin tecnicismos. De la primera conversación al resultado final.</p>
+  <div class="steps">
+    <div class="step reveal"><div class="step-num">01</div><div><div class="step-title">Nos contás qué necesitás</div><div class="step-desc">Por WhatsApp, email o formulario. Sin compromiso. Respondemos el mismo día.</div></div></div>
+    <div class="step reveal"><div class="step-num">02</div><div><div class="step-title">Acordamos los detalles</div><div class="step-desc">Te explicamos qué incluye, los tiempos y firmamos un contrato simple que protege a los dos.</div></div></div>
+    <div class="step reveal"><div class="step-num">03</div><div><div class="step-title">Nos ponemos a trabajar</div><div class="step-desc">Vos nos mandás los materiales y nosotros hacemos el resto. Te mostramos avances por WhatsApp.</div></div></div>
+    <div class="step reveal"><div class="step-num">04</div><div><div class="step-title">Revisamos juntos</div><div class="step-desc">Si algo no te convence, lo cambiamos. Hasta 6 rondas de revisiones incluidas.</div></div></div>
+    <div class="step reveal"><div class="step-num">05</div><div><div class="step-title">¡Tu proyecto está live!</div><div class="step-desc">Publicamos todo y te entregamos los accesos. Tu negocio ya está en internet.</div></div></div>
+  </div>
+</section>
+
+<!-- 6. PARA QUIÉN -->
+<section id="paraquien" class="aud-bg">
+  <div class="sec-eyebrow">¿Para quién?</div>
+  <div class="sec-title">Trabajamos con<br/><em>todo tipo</em> de clientes</div>
+  <p class="sec-intro">Si tenés un negocio, una idea o simplemente necesitás ayuda digital, somos para vos.</p>
+  <div class="aud-grid">
+    <div class="aud-card reveal"><div class="aud-emoji"><span class="material-symbols-outlined">storefront</span></div><div class="aud-name">Comercios y pymes</div><div class="aud-desc">Negocios que quieren mejorar su gestión o presencia online.</div></div>
+    <div class="aud-card reveal"><div class="aud-emoji"><span class="material-symbols-outlined">rocket_launch</span></div><div class="aud-name">Emprendedores</div><div class="aud-desc">Que están arrancando y necesitan presencia digital profesional.</div></div>
+    <div class="aud-card reveal"><div class="aud-emoji"><span class="material-symbols-outlined">elderly</span></div><div class="aud-name">Adultos mayores</div><div class="aud-desc">Que necesitan hacer trámites online sin complicaciones.</div></div>
+    <div class="aud-card reveal"><div class="aud-emoji"><span class="material-symbols-outlined">school</span></div><div class="aud-name">Estudiantes</div><div class="aud-desc">Que quieren entrar al mercado laboral con el pie derecho.</div></div>
+    <div class="aud-card span2 reveal"><div class="aud-emoji"><span class="material-symbols-outlined">lightbulb</span></div><div class="aud-name">Desempleados que quieren emprender</div><div class="aud-desc">Los acompañamos <strong style="color:var(--forest);">sin costo</strong> en sus primeros pasos.</div></div>
+    <div class="aud-card night reveal"><div class="aud-emoji"><span class="material-symbols-outlined" style="color:rgba(255,255,255,0.7);">manage_search</span></div><div class="aud-name">Profesionales y particulares</div><div class="aud-desc">Que quieren controlar su información en internet.</div></div>
+  </div>
+</section>
+
+<!-- 7. FAQ -->
+<section id="faq">
+  <div class="sec-eyebrow">Dudas</div>
+  <div class="sec-title">Preguntas<br/><em>frecuentes</em></div>
+  <div class="faq-list">
+    <div class="faq-item"><div class="faq-q">¿Cuánto tarda en estar lista mi web?<span class="faq-icon">+</span></div><div class="faq-a">Entre 3 y 7 días hábiles. El tiempo depende de qué tan rápido nos mandás los materiales (fotos, textos, logo). Una vez que tenemos todo, en 3 días está lista.</div></div>
+    <div class="faq-item"><div class="faq-q">¿Necesito saber de tecnología?<span class="faq-icon">+</span></div><div class="faq-a">Para nada. Nos encargamos de absolutamente todo. Vos solo nos contás qué querés y nosotros lo hacemos realidad.</div></div>
+    <div class="faq-item"><div class="faq-q">¿Cómo se paga?<span class="faq-icon">+</span></div><div class="faq-a">50% al inicio para arrancar y 50% cuando entregamos el trabajo terminado. Aceptamos transferencia bancaria, Abitab y RedPagos.</div></div>
+    <div class="faq-item"><div class="faq-q">¿Qué pasa si no me gusta cómo quedó?<span class="faq-icon">+</span></div><div class="faq-a">Incluimos hasta 6 rondas de revisiones sin costo adicional. Si algo no te convence, lo cambiamos hasta que estés conforme.</div></div>
+    <div class="faq-item"><div class="faq-q">¿El dominio y hosting tienen costo mensual?<span class="faq-icon">+</span></div><div class="faq-a">El hosting es completamente gratuito. El dominio se renueva una vez al año por un valor mínimo del que te avisamos con anticipación.</div></div>
+    <div class="faq-item"><div class="faq-q">¿Puedo pedir cambios después de entregado el proyecto?<span class="faq-icon">+</span></div><div class="faq-a">Sí. Los cambios pequeños (textos, precios, fotos) tienen un costo mínimo. Para cambios mayores cotizamos según lo que necesitás.</div></div>
+  </div>
+</section>
+
+<div class="cta-final">
+  <h2>¿Listo para<br/>dar el paso?</h2>
+  <p>Consultanos sin compromiso. La primera conversación es completamente gratis.</p>
+  <a href="contacto.html" class="btn-white">Hablar con nosotros →</a>
+</div>
+
+<footer>
+  <a href="index.html" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo" style="height:34px;width:auto;"/>
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="f-links">
+    <a href="servicios.html">Servicios</a>
+    <a href="trabajos.html">Trabajos</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <small>© 2025 ConectaTuMundo · Uruguay</small>
+</footer>
+
+<script>
+// Scroll progress
+var scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', function(){
+  var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollBar.style.width = pct + '%';
+}, {passive:true});
+
+// Nav scrolled
+var nav = document.getElementById('mainNav');
+window.addEventListener('scroll', function(){
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, {passive:true});
+
+// Particle canvas
+(function(){
+  var canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, pts = [];
+  function resize(){ W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize, {passive:true});
+  var N = Math.min(30, Math.floor((W||800)/28));
+  for(var i=0;i<N;i++) pts.push({x:Math.random()*(W||800),y:Math.random()*(H||400),r:Math.random()*1.5+0.4,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:Math.random()*.25+.06});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(function(p){
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(167,139,191,'+p.a+')'; ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    });
+    for(var i=0;i<pts.length;i++) for(var j=i+1;j<pts.length;j++){
+      var dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.strokeStyle='rgba(109,40,217,'+(0.05*(1-d/90))+')'; ctx.lineWidth=.6; ctx.stroke(); }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Animated counters
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var el=e.target, target=parseInt(el.dataset.target), step=target/75, cur=0;
+      var t=setInterval(function(){ cur=Math.min(cur+step,target); el.textContent=Math.floor(cur); if(cur>=target)clearInterval(t); },16);
+      obs.unobserve(el);
+    });
+  },{threshold:.5});
+  document.querySelectorAll('.count-up').forEach(function(el){ obs.observe(el); });
+})();
+
+// Tilt on srv cards
+document.querySelectorAll('.srv-card').forEach(function(card){
+  card.addEventListener('mousemove', function(e){
+    var r=card.getBoundingClientRect();
+    var dx=(e.clientX-r.left-r.width/2)/r.width;
+    var dy=(e.clientY-r.top-r.height/2)/r.height;
+    card.style.transform='perspective(700px) rotateY('+(dx*5)+'deg) rotateX('+(-dy*5)+'deg) translateZ(4px)';
+  });
+  card.addEventListener('mouseleave', function(){ card.style.transform=''; });
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click', function(){
+    var item = q.parentElement;
+    var open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!open) item.classList.add('open');
+  });
+});
+
+// Reveal on scroll
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.08});
+  document.querySelectorAll('.reveal, .step, .aud-card, .srv-card').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>

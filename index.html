@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConectaTuMundo — Tecnología para todos</title>
+  <meta name="description" content="Trámites digitales, dashboards, páginas web y orientación laboral. Soluciones tecnológicas accesibles para adultos mayores, comercios, emprendedores y estudiantes en Uruguay." />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf8fc; --warm: #f0ebf7; --earth: #a78bbf;
+      --terracota: #8b5cf6; --forest: #6d28d9; --forest-light: #7c3aed;
+      --ink: #1a1020; --muted: #6b5b7a;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Outfit', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--ink); font-family: var(--font-sans); overflow-x: hidden; }
+
+    /* NOISE */
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: -1; opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px; pointer-events: none;
+    }
+
+    /* SCROLL PROGRESS */
+    .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--forest), #a855f7, var(--forest-light)); z-index: 300; transition: width 0.08s linear; border-radius: 0 2px 2px 0; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 4rem; background: rgba(250,248,252,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(167,139,191,0.2); transition: box-shadow 0.3s; }
+    nav.scrolled { box-shadow: 0 4px 30px rgba(109,40,217,0.1); }
+    .logo { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+    .logo img { height: 42px; width: auto; }
+    .logo-text { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--ink); }
+    .logo-text span { color: var(--forest-light); }
+    .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+    .nav-links a { font-size: 0.85rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--forest); }
+    .nav-cta { background: var(--forest) !important; color: white !important; padding: 0.6rem 1.5rem; border-radius: 100px; font-weight: 600 !important; }
+    .nav-cta:hover { background: var(--forest-light) !important; }
+
+    /* TICKER */
+    .ticker-wrap { background: var(--forest); overflow: hidden; padding: 1.1rem 0; position: relative; margin-top: 68px; }
+    .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--forest) 30%, transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--forest) 30%, transparent); }
+    .ticker-track { display: flex; width: max-content; animation: ticker 30s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item { display: inline-flex; align-items: center; gap: 0.65rem; white-space: nowrap; padding: 0 2.25rem; color: rgba(255,255,255,0.9); font-size: 0.88rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .ticker-item .material-symbols-outlined { font-size: 1.1rem; font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20; color: rgba(255,255,255,0.6); }
+    .ticker-sep { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.3); flex-shrink: 0; }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 290px; align-items: center; gap: 3rem; padding: 8rem 4rem 5rem; position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; overflow: hidden; }
+    .hero-bg-svg { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5; animation: meshFloat 18s ease-in-out infinite alternate; }
+    .hero-bg-overlay { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 80% 40%, rgba(109,40,217,0.06) 0%, transparent 70%), radial-gradient(ellipse 50% 50% at 20% 80%, rgba(167,139,191,0.07) 0%, transparent 60%), linear-gradient(180deg, rgba(250,248,252,0) 60%, rgba(250,248,252,0.3) 100%); }
+    @keyframes meshFloat { 0% { transform: scale(1) translateY(0); } 100% { transform: scale(1.05) translateY(-12px); } }
+    .hero-deco { position: absolute; right: -80px; top: 50%; transform: translateY(-50%); width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(109,40,217,0.06) 0%, transparent 70%); border: 1px solid rgba(167,139,191,0.15); }
+    .hero-deco-2 { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); width: 400px; height: 400px; border-radius: 50%; border: 1px solid rgba(167,139,191,0.1); }
+    .particles-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .hero-content { position: relative; z-index: 2; }
+
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(109,40,217,0.08); border: 1px solid rgba(109,40,217,0.2); color: var(--forest); font-size: 0.78rem; font-weight: 600; padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 2rem; letter-spacing: 0.05em; text-transform: uppercase; animation: fadeUp 0.8s ease both; }
+    .pulse-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; position: relative; flex-shrink: 0; }
+    .pulse-dot::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: #22c55e; opacity: 0.4; animation: pulseDot 2s ease infinite; }
+    @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.9); opacity: 0; } }
+
+    h1 { font-family: var(--font-serif); font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.5rem; animation: fadeUp 0.8s 0.1s ease both; }
+    h1 em { font-style: italic; }
+    .gradient-text { background: linear-gradient(130deg, var(--forest) 0%, #a855f7 50%, var(--forest-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .hero-sub { font-size: 1.1rem; color: var(--muted); line-height: 1.7; max-width: 520px; margin-bottom: 2.5rem; animation: fadeUp 0.8s 0.2s ease both; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; animation: fadeUp 0.8s 0.3s ease both; }
+    .btn-main { background: var(--forest); color: white; padding: 1rem 2.2rem; border-radius: 100px; font-weight: 600; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.2s, transform 0.2s; }
+    .btn-main:hover { background: var(--forest-light); transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: var(--ink); padding: 1rem 2.2rem; border-radius: 100px; font-weight: 500; font-size: 0.95rem; text-decoration: none; border: 1.5px solid rgba(26,20,16,0.2); display: inline-block; transition: border-color 0.2s, color 0.2s; }
+    .btn-secondary:hover { border-color: var(--forest); color: var(--forest); }
+
+    .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.3rem; color: var(--muted); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; animation: scrollBounce 2.2s ease infinite; z-index: 5; }
+    .scroll-hint .material-symbols-outlined { font-size: 1.3rem; }
+    @keyframes scrollBounce { 0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.5; } 50% { transform: translateX(-50%) translateY(7px); opacity: 1; } }
+
+    /* FLOAT CARDS */
+    .hero-float { position: relative; display: flex; flex-direction: column; gap: 0.75rem; z-index: 2; animation: fadeUp 0.8s 0.4s ease both; }
+    .float-card { background: white; border-radius: 16px; padding: 1.1rem 1.4rem; box-shadow: 0 4px 30px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 1rem; border: 1px solid rgba(167,139,191,0.15); transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), box-shadow 0.35s; }
+    .float-card:hover { transform: translateX(-5px) translateY(-2px); box-shadow: 0 12px 40px rgba(109,40,217,0.1); }
+    .float-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: rgba(109,40,217,0.09); color: var(--forest); flex-shrink: 0; transition: background 0.3s, transform 0.3s; }
+    .float-icon .material-symbols-outlined { font-size: 1.25rem; }
+    .float-card:hover .float-icon { background: var(--forest); color: white; transform: scale(1.1) rotate(-5deg); }
+    .float-card-text { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
+    .float-card-sub { font-size: 0.71rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* STATS BAR */
+    .stats-bar { background: var(--ink); display: flex; overflow: hidden; position: relative; }
+    .stats-bar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(109,40,217,0.18) 0%, transparent 55%); }
+    .stat-item { flex: 1; text-align: center; padding: 2rem 1rem; border-right: 1px solid rgba(255,255,255,0.07); position: relative; z-index: 1; }
+    .stat-item:last-child { border-right: none; }
+    .stat-value { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; color: white; line-height: 1; margin-bottom: 0.3rem; }
+    .stat-value span { color: #c4b5fd; }
+    .stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.38); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* QUIENES */
+    .quienes { background: var(--warm); padding: 5rem 4rem; text-align: center; }
+    .quienes p { font-family: var(--font-serif); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 400; line-height: 1.5; max-width: 700px; margin: 0 auto; color: var(--ink); }
+    .quienes p strong { color: var(--terracota); font-weight: 700; }
+
+    /* SERVICIOS */
+    #servicios { padding: 6rem 4rem; }
+    .section-eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--earth); margin-bottom: 0.75rem; }
+    .section-heading { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 3.5rem; line-height: 1.1; }
+    .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .service-card { background: white; border-radius: 20px; padding: 2.5rem; border: 1px solid rgba(167,139,191,0.15); position: relative; overflow: hidden; transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), box-shadow 0.4s; }
+    .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--forest), var(--forest-light)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+    .service-card:hover { transform: translateY(-5px); box-shadow: 0 24px 60px rgba(109,40,217,0.1); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card.featured { background: var(--forest); color: white; border-color: var(--forest); }
+    .service-card.featured::before { display: none; }
+    .service-card.featured .service-desc { color: rgba(255,255,255,0.7); }
+    .service-card.featured .service-tag { background: rgba(255,255,255,0.15); color: white; }
+    .service-card.featured .service-num { color: rgba(255,255,255,0.3); }
+    .service-num { font-family: var(--font-serif); font-size: 0.8rem; color: rgba(196,149,106,0.6); margin-bottom: 1.2rem; font-style: italic; }
+    .service-emoji { display: block; margin-bottom: 1rem; }
+    .service-emoji .material-symbols-outlined { font-size: 2.5rem; }
+    .service-title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .service-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+    .service-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .service-tag { font-size: 0.72rem; font-weight: 500; background: rgba(109,40,217,0.07); color: var(--forest); padding: 0.3rem 0.75rem; border-radius: 100px; }
+
+    /* COMO FUNCIONA */
+    #como { background: var(--ink); color: white; padding: 6rem 4rem; }
+    #como .section-eyebrow { color: var(--earth); }
+    #como .section-heading { color: white; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; position: relative; }
+    .steps::before { content: ''; position: absolute; top: 2.5rem; left: calc(16.6% + 1rem); right: calc(16.6% + 1rem); height: 1px; background: linear-gradient(90deg, var(--earth), transparent 50%, var(--earth)); opacity: 0.3; }
+    .step { text-align: center; }
+    .step-num { width: 50px; height: 50px; border-radius: 50%; background: var(--earth); color: white; font-family: var(--font-serif); font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; position: relative; }
+    .step-num::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid rgba(167,139,191,0.25); animation: stepRing 3s ease infinite; }
+    @keyframes stepRing { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.18); opacity: 0; } }
+    .step-title { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; }
+    .step-desc { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+    /* PARA QUIEN */
+    #paraquien { padding: 6rem 4rem; }
+    .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .audience-card { background: white; border: 1px solid rgba(167,139,191,0.15); border-radius: 16px; padding: 2rem 1.5rem; text-align: center; transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), box-shadow 0.35s, border-color 0.3s; }
+    .audience-card:hover { transform: translateY(-5px); box-shadow: 0 16px 50px rgba(109,40,217,0.08); border-color: var(--earth); }
+    .audience-icon-wrap { width: 60px; height: 60px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem; transition: transform 0.3s; }
+    .audience-card:hover .audience-icon-wrap { transform: scale(1.12) rotate(-4deg); }
+    .audience-icon-wrap .material-symbols-outlined { font-size: 1.8rem; }
+    .audience-title { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .audience-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+
+    /* CTA CONTACTO */
+    #contacto { background: var(--warm); padding: 6rem 4rem; text-align: center; }
+    #contacto h2 { font-family: var(--font-serif); font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 1rem; line-height: 1.1; }
+    #contacto h2 em { color: var(--terracota); font-style: italic; }
+    #contacto p { font-size: 1rem; color: var(--muted); max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .contact-options { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .contact-btn { display: flex; align-items: center; gap: 0.75rem; padding: 1rem 2rem; border-radius: 100px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+    .contact-btn.whatsapp { background: #25D366; color: white; }
+    .contact-btn.email    { background: var(--forest); color: white; }
+    .contact-btn.phone    { background: white; color: var(--ink); border: 1.5px solid rgba(0,0,0,0.12); }
+    .contact-btn .material-symbols-outlined { font-size: 1.1rem; }
+
+    /* FOOTER */
+    footer { background: var(--ink); color: rgba(255,255,255,0.5); padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+    footer .logo-text { color: white; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-scale { opacity: 0; transform: scale(0.93); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+    .reveal-delay-1 { transition-delay: 0.1s; } .reveal-delay-2 { transition-delay: 0.2s; } .reveal-delay-3 { transition-delay: 0.3s; }
+    .d1 { transition-delay: 0.05s; } .d2 { transition-delay: 0.10s; } .d3 { transition-delay: 0.15s; } .d4 { transition-delay: 0.20s; }
+
+    /* MATERIAL ICONS */
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; line-height: 1; }
+    .icon-filled { font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+
+    /* TABLET */
+    @media (max-width: 1100px) {
+      .hero { grid-template-columns: 1fr 240px; padding: 7rem 2.5rem 4rem; gap: 2rem; }
+      nav { padding: 1rem 2rem; }
+      #servicios, #como, #paraquien, #contacto { padding: 5rem 2rem; }
+    }
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 6.5rem 1.25rem 2.5rem; min-height: auto; }
+      .hero-float, .hero-deco, .hero-deco-2 { display: none; }
+      h1 { font-size: clamp(2.4rem, 10vw, 3.5rem); }
+      .hero-sub { font-size: 1rem; }
+      .hero-actions { flex-direction: column; }
+      .btn-main, .btn-secondary { text-align: center; justify-content: center; }
+      .quienes { padding: 2.5rem 1.25rem; }
+      .quienes p { font-size: 1.2rem; }
+      #servicios { padding: 3.5rem 1.25rem; }
+      .services-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .service-card { padding: 1.75rem; }
+      #como { padding: 3.5rem 1.25rem; }
+      .steps { grid-template-columns: 1fr; gap: 2rem; }
+      .steps::before { display: none; }
+      #paraquien { padding: 3.5rem 1.25rem; }
+      .audience-grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+      .audience-card { padding: 1.25rem 1rem; }
+      #contacto { padding: 3.5rem 1.25rem; }
+      .contact-options { flex-direction: column; align-items: stretch; }
+      .contact-btn { justify-content: center; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.25rem; }
+      .section-heading { font-size: clamp(1.6rem, 6vw, 2.2rem); margin-bottom: 2rem; }
+      .stats-bar { flex-wrap: wrap; }
+      .stat-item { flex: 1 1 50%; }
+    }
+    @media (max-width: 400px) { .audience-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollBar"></div>
+
+<nav id="mainNav">
+  <a href="#" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo" />
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="servicios.html">Servicios</a>
+    <a href="trabajos.html">Trabajos</a>
+    <a href="contacto.html">Contacto</a>
+    <a href="contacto.html" class="nav-cta">Consultá gratis</a>
+  </div>
+</nav>
+
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Diseño web profesional</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Dashboards para pymes</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Trámites digitales</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Orientación laboral</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Hosting gratuito</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Primera consulta gratis</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Auditoría de huella digital</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Diseño web profesional</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Dashboards para pymes</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Trámites digitales</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Orientación laboral</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Hosting gratuito</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Primera consulta gratis</span><span class="ticker-sep"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled">check_circle</span>Auditoría de huella digital</span><span class="ticker-sep"></span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-bg">
+    <svg class="hero-bg-svg" xmlns="http://www.w3.org/2000/svg" width="1440" height="560" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 560">
+      <g clip-path="url(#bgClip)" fill="none">
+        <path d="M19.95 52.88Q28.08 56.86 36.22 60.83 44.35 64.76 52.48 68.68 60.62 72.55 68.75 76.41 76.88 80.19 85.02 83.97 93.15 87.64 101.28 91.32 109.41 94.87 117.55 98.43 125.68 101.84 133.81 105.26 141.95 108.52 150.08 111.78" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M176.8 121.72Q184.39 124.31 191.97 126.89 199.56 129.3 207.14 131.7 214.73 133.92 222.31 136.13 229.9 138.13 237.49 140.14 245.07 141.93 252.66 143.73 260.24 145.3 267.83 146.88 275.41 148.22 283 149.57" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M300.17 152.05Q307.83 152.91 315.48 153.76 323.14 154.36 330.79 154.96 338.45 155.32 346.1 155.67 353.76 155.77 361.41 155.87 369.07 155.73 376.73 155.58 384.38 155.18 392.04 154.78 399.69 154.13 407.35 153.48 415 152.58 422.66 151.69 430.31 150.55 437.97 149.41" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M561.73 114.93Q569.94 111.72 578.16 108.52 586.37 105.14 594.59 101.77 602.8 98.24 611.01 94.72 619.23 91.06 627.44 87.4 635.65 83.63 643.87 79.86 652.08 76 660.3 72.13 668.51 68.19 676.72 64.25 684.94 60.26 693.15 56.26 701.37 52.23 709.58 48.2" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M743.88 31.34Q751.44 27.66 758.99 23.98 766.55 20.33 774.11 16.69 781.67 13.11 789.22 9.52 796.78 6.01 804.34 2.5 811.9-0.93 819.45-4.35 827.01-7.67 834.57-10.99 842.13-14.2 849.68-17.4 857.24-20.47 864.8-23.54 872.35-26.47 879.91-29.4 887.47-32.17 895.03-34.94 902.58-37.53 910.14-40.13 917.7-42.55 925.26-44.97 932.81-47.2 940.37-49.43" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M36.99 104.28Q44.81 108.05 52.63 111.83 60.45 115.54 68.26 119.26 76.08 122.89 83.9 126.53 91.72 130.08 99.54 133.62 107.36 137.05 115.18 140.48 122.99 143.79 130.81 147.1 138.63 150.26 146.45 153.43 154.27 156.44 162.09 159.44 169.9 162.28 177.72 165.12 185.54 167.77 193.36 170.43" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M209.07 175.36Q216.84 177.6 224.62 179.84 232.39 181.86 240.16 183.88 247.94 185.68 255.71 187.48 263.48 189.04 271.26 190.6 279.03 191.93 286.81 193.25 294.58 194.33 302.35 195.4 310.13 196.23 317.9 197.06 325.67 197.63 333.45 198.2 341.22 198.51 348.99 198.82 356.77 198.88 364.54 198.93" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M457.69 188.86Q465.81 187.08 473.93 185.3 482.05 183.27 490.17 181.24 498.29 178.98 506.41 176.71 514.53 174.21 522.65 171.72 530.77 169.01 538.89 166.3 547.01 163.39 555.13 160.48 563.25 157.38 571.37 154.29 579.49 151.02 587.61 147.75" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M604.91 140.45Q612.45 137.14 620 133.83 627.54 130.41 635.08 127 642.63 123.5 650.17 119.99 657.71 116.42 665.26 112.84 672.8 109.21 680.34 105.57 687.89 101.9 695.43 98.22 702.97 94.52 710.52 90.82 718.06 87.11 725.6 83.4 733.15 79.69 740.69 75.98 748.23 72.3 755.78 68.62 763.32 64.97 770.86 61.32 778.41 57.73 785.95 54.14" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M805.79 44.91Q813.9 41.25 822.01 37.59 830.12 34.05 838.23 30.51 846.34 27.11 854.45 23.71 862.56 20.47 870.67 17.22 878.78 14.15 886.9 11.08 895.01 8.2 903.12 5.31 911.23 2.63 919.34-0.05 927.45-2.51 935.56-4.98 943.67-7.21 951.78-9.45" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M30.78 144.33Q38.5 148.08 46.23 151.83 53.95 155.53 61.68 159.22 69.4 162.85 77.13 166.48 84.85 170.02 92.57 173.56 100.3 177.01 108.02 180.45 115.75 183.78 123.47 187.1" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M137.48 192.91Q145.03 195.91 152.59 198.91 160.14 201.75 167.7 204.6 175.25 207.28 182.8 209.96 190.36 212.47 197.91 214.98 205.47 217.3 213.02 219.62 220.57 221.74 228.13 223.87 235.68 225.79 243.24 227.71 250.79 229.41 258.34 231.12 265.9 232.6 273.45 234.08 281.01 235.34 288.56 236.59" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M391.27 240.98Q399.23 240.32 407.18 239.65 415.14 238.72 423.1 237.78 431.06 236.59 439.01 235.39 446.97 233.94 454.93 232.49 462.88 230.79 470.84 229.09 478.8 227.15 486.75 225.21 494.71 223.04 502.67 220.87 510.63 218.48 518.58 216.09 526.54 213.49 534.5 210.88 542.45 208.09 550.41 205.29 558.37 202.31 566.33 199.32 574.28 196.17 582.24 193.02" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M683.82 146.96Q691.92 143.01 700.02 139.05 708.12 135.07 716.22 131.09 724.32 127.11 732.42 123.12 740.52 119.15 748.62 115.18" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M849.68 68.76Q857.98 65.39 866.28 62.02 874.58 58.83 882.88 55.64 891.18 52.65 899.48 49.65 907.78 46.86 916.08 44.07 924.38 41.51 932.69 38.94 940.99 36.61 949.29 34.29 957.59 32.21 965.89 30.13 974.19 28.31 982.49 26.49 990.79 24.94 999.09 23.39" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M1011.29 21.46Q1019.82 20.37 1028.36 19.28 1036.89 18.5 1045.42 17.71 1053.95 17.24 1062.49 16.76 1071.02 16.6 1079.55 16.43 1088.09 16.58 1096.62 16.73 1105.15 17.19 1113.68 17.65 1122.22 18.42 1130.75 19.19" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M1211.1 34.39Q1219.26 36.68 1227.42 38.97 1235.58 41.49 1243.74 44.02 1251.9 46.75 1260.06 49.49 1268.22 52.43 1276.38 55.37 1284.54 58.5 1292.7 61.62 1300.86 64.92 1309.02 68.22 1317.18 71.67 1325.34 75.12 1333.5 78.71 1341.66 82.3 1349.82 86.01 1357.98 89.72 1366.14 93.53 1374.3 97.34 1382.46 101.22 1390.62 105.11" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M6.96 218.81Q14.88 222.7 22.8 226.59 30.73 230.45 38.65 234.32 46.57 238.13 54.49 241.95 62.41 245.71 70.33 249.46 78.26 253.13 86.18 256.81 94.1 260.38 102.02 263.96 109.94 267.41 117.87 270.87 125.79 274.2 133.71 277.52 141.63 280.7 149.55 283.88 157.47 286.89 165.4 289.91 173.32 292.74 181.24 295.58" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M203.9 303.02Q211.9 305.39 219.9 307.76 227.9 309.9 235.9 312.05 243.89 313.96 251.89 315.87 259.89 317.53 267.89 319.2 275.89 320.61 283.89 322.02 291.89 323.17 299.89 324.33 307.89 325.21 315.88 326.1 323.88 326.72 331.88 327.34 339.88 327.68 347.88 328.03" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M376.77 327.88Q384.58 327.47 392.39 327.06 400.2 326.39 408.01 325.72 415.82 324.79 423.63 323.87 431.44 322.69 439.25 321.51 447.06 320.08 454.87 318.66 462.67 316.99 470.48 315.33 478.29 313.43 486.1 311.54 493.91 309.42 501.72 307.3 509.53 304.96 517.34 302.63 525.15 300.09 532.96 297.56" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M637.77 254.99Q645.81 251.24 653.85 247.49 661.88 243.67 669.92 239.84 677.96 235.95 686 232.06 694.04 228.13 702.07 224.2 710.11 220.25 718.15 216.3 726.19 212.34 734.23 208.39 742.26 204.45 750.3 200.51 758.34 196.61 766.38 192.71 774.42 188.87 782.45 185.02 790.49 181.26 798.53 177.49" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M813.89 170.46Q821.74 166.97 829.59 163.48 837.45 160.11 845.3 156.74 853.15 153.51 861 150.28 868.85 147.2 876.71 144.13 884.56 141.22 892.41 138.31 900.26 135.58 908.11 132.85 915.97 130.31 923.82 127.78 931.67 125.45 939.52 123.12 947.37 121.01 955.23 118.89 963.08 117.01 970.93 115.12" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M898.78 179.13Q906.96 176.37 915.13 173.61 923.31 171.07 931.49 168.53 939.66 166.22 947.84 163.9 956.01 161.83 964.19 159.76 972.37 157.94 980.54 156.12 988.72 154.56 996.9 153 1005.07 151.7 1013.25 150.41 1021.43 149.4 1029.6 148.38 1037.78 147.64 1045.95 146.9 1054.13 146.45 1062.31 146 1070.48 145.83 1078.66 145.66" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M1101.97 146.18Q1109.94 146.69 1117.9 147.2 1125.87 147.98 1133.84 148.76 1141.81 149.8 1149.78 150.85 1157.74 152.15 1165.71 153.46 1173.68 155.02 1181.64 156.57 1189.61 158.38 1197.58 160.18 1205.55 162.23 1213.52 164.27 1221.48 166.54 1229.45 168.81 1237.42 171.29 1245.38 173.78 1253.35 176.47 1261.32 179.16 1269.29 182.04 1277.26 184.93 1285.22 187.99 1293.19 191.05" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M34.98 318.69Q42.87 322.5 50.77 326.32 58.66 330.08 66.55 333.84 74.44 337.52 82.34 341.2 90.23 344.78 98.12 348.37 106.02 351.85 113.91 355.32" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M147.41 369.19Q156.24 372.56 165.06 375.94 173.89 379.09 182.72 382.24 191.55 385.15 200.37 388.07 209.2 390.72 218.03 393.38 226.85 395.76 235.68 398.15" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M504.48 349.58Q512.16 347.25 519.85 344.92 527.53 342.4 535.21 339.87 542.9 337.16 550.58 334.46 558.26 331.58 565.95 328.7 573.63 325.67 581.31 322.63 588.99 319.45 596.68 316.27 604.36 312.96 612.04 309.65 619.73 306.23 627.41 302.8 635.09 299.28 642.78 295.75 650.46 292.15 658.14 288.54 665.83 284.86 673.51 281.19" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M702.36 267.14Q710.12 263.32 717.89 259.5 725.65 255.68 733.42 251.86 741.18 248.06 748.95 244.25 756.71 240.48 764.47 236.71 772.24 232.99 780 229.27 787.77 225.61 795.53 221.96 803.29 218.39 811.06 214.81 818.82 211.34 826.59 207.87 834.35 204.52 842.12 201.16 849.88 197.94 857.64 194.72 865.41 191.64 873.17 188.56 880.94 185.64 888.7 182.73" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M969.83 201.52Q977.93 199.8 986.04 198.09 994.14 196.63 1002.24 195.17 1010.34 193.98 1018.45 192.78 1026.55 191.86 1034.65 190.94 1042.75 190.29 1050.86 189.65 1058.96 189.28 1067.06 188.92 1075.17 188.83 1083.27 188.75 1091.37 188.95 1099.47 189.15 1107.58 189.62 1115.68 190.1" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M1204.58 205Q1212.37 207.09 1220.16 209.18 1227.95 211.49 1235.74 213.8 1243.53 216.3 1251.32 218.81 1259.11 221.51 1266.9 224.21 1274.69 227.09 1282.48 229.97 1290.27 233.02 1298.06 236.06 1305.85 239.25 1313.64 242.45 1321.43 245.78 1329.22 249.11 1337.01 252.57 1344.8 256.02 1352.59 259.58 1360.38 263.13 1368.17 266.78 1375.96 270.43" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M14.99 265.83Q22.97 269.74 30.95 273.65 38.93 277.52 46.92 281.39 54.9 285.21 62.88 289.02 70.86 292.76 78.84 296.51 86.82 300.15 94.8 303.8 102.79 307.34 110.77 310.88 118.75 314.29 126.73 317.71" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M29.52 445.26Q37.81 449.28 46.11 453.31 54.4 457.28 62.7 461.24 70.99 465.13 79.28 469.02 87.58 472.8 95.87 476.59 104.16 480.26 112.46 483.92 120.75 487.45 129.05 490.98 137.34 494.35 145.63 497.72 153.93 500.92 162.22 504.11 170.52 507.11 178.81 510.12" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M759.06 411.64Q767.11 407.76 775.15 403.88 783.2 400.07 791.25 396.26 799.29 392.54 807.34 388.81 815.39 385.19 823.43 381.57 831.48 378.07 839.53 374.57 847.57 371.21 855.62 367.85" stroke="rgba(34,149,128,0.65)" stroke-width="3.5"></path>
+        <path d="M894.38 352.99Q902.74 350.11 911.09 347.24 919.45 344.59 927.81 341.94 936.16 339.53 944.52 337.11 952.87 334.95 961.23 332.78 969.59 330.88 977.94 328.97 986.3 327.34 994.66 325.7 1003.01 324.34 1011.37 322.99 1019.72 321.92 1028.08 320.85" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M1054.95 318.64Q1062.49 318.36 1070.04 318.08 1077.59 318.04 1085.13 318 1092.68 318.2 1100.22 318.41 1107.76 318.86 1115.31 319.31 1122.86 320 1130.4 320.69 1137.95 321.61 1145.49 322.54 1153.04 323.71 1160.58 324.87 1168.13 326.26 1175.67 327.66 1183.22 329.27 1190.76 330.89 1198.31 332.72 1205.85 334.55 1213.39 336.59 1220.94 338.64" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M1254.74 349.2Q1262.9 352.07 1271.06 354.95 1279.21 358.01 1287.37 361.08 1295.53 364.32 1303.69 367.57 1311.85 370.97 1320 374.37 1328.16 377.92 1336.32 381.46 1344.48 385.13 1352.64 388.8 1360.79 392.58 1368.95 396.36 1377.11 400.22 1385.27 404.09 1393.43 408.02 1401.58 411.95 1409.74 415.93 1417.9 419.91" stroke="rgba(168,85,247,0.65)" stroke-width="3.5"></path>
+        <path d="M778.39 488.49Q786.17 484.83 793.94 481.16 801.72 477.57 809.5 473.99 817.27 470.5 825.05 467.01 832.83 463.64 840.6 460.27 848.38 457.03 856.15 453.78 863.93 450.69 871.71 447.59 879.48 444.65 887.26 441.72" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+        <path d="M1151.9 409.63Q1159.99 410.99 1168.09 412.35 1176.18 413.98 1184.28 415.6 1192.37 417.47 1200.46 419.35 1208.56 421.47 1216.65 423.59 1224.75 425.94 1232.84 428.29 1240.93 430.86 1249.03 433.44 1257.12 436.22 1265.22 439 1273.31 441.97 1281.41 444.95 1289.5 448.1 1297.59 451.26 1305.69 454.58 1313.78 457.89 1321.88 461.36 1329.97 464.82" stroke="rgba(34,197,94,0.65)" stroke-width="3.5"></path>
+      </g>
+      <defs>
+        <clipPath id="bgClip"><rect width="1440" height="560" x="0" y="0"/></clipPath>
+      </defs>
+    </svg>
+    <div class="hero-bg-overlay"></div>
+  </div>
+  <div class="hero-deco"></div>
+  <div class="hero-deco-2"></div>
+  <canvas class="particles-canvas" id="heroCanvas"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="pulse-dot"></span>
+      <span class="material-symbols-outlined icon-filled" style="font-size:0.9rem;">flag</span>
+      Servicio en Uruguay
+    </div>
+    <h1>La tecnología<br/>al alcance de <em class="gradient-text">todos</em></h1>
+    <p class="hero-sub">Te ayudamos con trámites digitales, dashboards para tu negocio, páginas web y orientación laboral. Sin tecnicismos, sin vueltas.</p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-main">Consultá gratis <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span></a>
+      <a href="#servicios" class="btn-secondary">Ver servicios</a>
+    </div>
+  </div>
+
+  <div class="hero-float">
+    <div class="float-card">
+      <span class="float-icon"><span class="material-symbols-outlined">storefront</span></span>
+      <div><div class="float-card-text">Pymes y comercios</div><div class="float-card-sub">Dashboards y logística</div></div>
+    </div>
+    <div class="float-card">
+      <span class="float-icon"><span class="material-symbols-outlined">rocket_launch</span></span>
+      <div><div class="float-card-text">Emprendedores</div><div class="float-card-sub">Web + SEO + Marketing</div></div>
+    </div>
+    <div class="float-card">
+      <span class="float-icon"><span class="material-symbols-outlined">elderly</span></span>
+      <div><div class="float-card-text">Adultos mayores</div><div class="float-card-sub">Trámites sin complicaciones</div></div>
+    </div>
+    <div class="float-card">
+      <span class="float-icon"><span class="material-symbols-outlined">school</span></span>
+      <div><div class="float-card-text">Estudiantes</div><div class="float-card-sub">Orientación y herramientas</div></div>
+    </div>
+    <div class="float-card" style="border:1.5px dashed rgba(109,40,217,0.3);background:#f8f4ff;">
+      <span class="float-icon"><span class="material-symbols-outlined">lightbulb</span></span>
+      <div><div class="float-card-text">Desempleados</div><div class="float-card-sub" style="color:var(--forest);font-weight:600;">Gratis — querés emprender</div></div>
+    </div>
+    <div class="float-card" style="background:linear-gradient(135deg,#1a1020,#2e1065);border:none;">
+      <span class="float-icon" style="background:rgba(255,255,255,0.1);color:white;"><span class="material-symbols-outlined">manage_search</span></span>
+      <div><div class="float-card-text" style="color:white;">Reputación digital</div><div class="float-card-sub" style="color:rgba(255,255,255,0.5);">Huella digital & privacidad</div></div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span class="material-symbols-outlined">keyboard_arrow_down</span>
+    <span>Explorá</span>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat-item reveal-scale d1">
+    <div class="stat-value"><span class="count-up" data-target="5">0</span><span>+</span></div>
+    <div class="stat-label">Proyectos activos</div>
+  </div>
+  <div class="stat-item reveal-scale d2">
+    <div class="stat-value"><span class="count-up" data-target="3">0</span><span> días</span></div>
+    <div class="stat-label">Entrega promedio</div>
+  </div>
+  <div class="stat-item reveal-scale d3">
+    <div class="stat-value"><span class="count-up" data-target="6">0</span><span>x</span></div>
+    <div class="stat-label">Revisiones incluidas</div>
+  </div>
+  <div class="stat-item reveal-scale d4">
+    <div class="stat-value"><span class="count-up" data-target="100">0</span><span>%</span></div>
+    <div class="stat-label">Mobile first</div>
+  </div>
+</div>
+
+<div class="quienes">
+  <p>Creemos que <strong>nadie debería quedarse afuera</strong> por no entender de tecnología. Por eso estamos acá: para acompañarte en cada paso.</p>
+</div>
+
+<section id="servicios">
+  <div class="section-eyebrow">Servicios</div>
+  <h2 class="section-heading">¿En qué te podemos<br/>ayudar?</h2>
+  <div class="services-grid">
+
+    <div class="service-card featured reveal">
+      <div class="service-num" style="color:rgba(255,255,255,0.3)">Servicio 01</div>
+      <span class="service-emoji"><span class="material-symbols-outlined">bar_chart</span></span>
+      <div class="service-title">Dashboards y apoyo logístico para pymes</div>
+      <p class="service-desc">Optimizamos el día a día de tu comercio o pyme: control de stock, tableros de ventas en Excel y Power BI, gestión de inventarios y mejora de procesos operativos.</p>
+      <div class="service-tags">
+        <span class="service-tag">Excel & Power BI</span><span class="service-tag">Control de stock</span>
+        <span class="service-tag">Procesos logísticos</span><span class="service-tag">Reportes</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">Servicio 02</div>
+      <span class="service-emoji"><span class="material-symbols-outlined">language</span></span>
+      <div class="service-title">Landing pages + SEO + Marketing</div>
+      <p class="service-desc">Creamos tu presencia digital desde cero: página web profesional, posicionamiento en Google y estrategia en redes sociales para que más clientes te encuentren.</p>
+      <div class="service-tags">
+        <span class="service-tag">Diseño web</span><span class="service-tag">SEO</span>
+        <span class="service-tag">Redes sociales</span><span class="service-tag">Google Ads</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">Servicio 03</div>
+      <span class="service-emoji"><span class="material-symbols-outlined">elderly</span></span>
+      <div class="service-title">Trámites digitales para adultos mayores</div>
+      <p class="service-desc">Te acompañamos paso a paso con el BPS, DGI, salud, bancos y más. Explicamos todo con paciencia, en persona o por videollamada, hasta que quede resuelto.</p>
+      <div class="service-tags">
+        <span class="service-tag">BPS / Jubilaciones</span><span class="service-tag">Banca digital</span>
+        <span class="service-tag">Salud en línea</span><span class="service-tag">Documentación</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">Servicio 04</div>
+      <span class="service-emoji"><span class="material-symbols-outlined">school</span></span>
+      <div class="service-title">Orientación para estudiantes</div>
+      <p class="service-desc">Te ayudamos a armar tu CV, preparar entrevistas, encontrar cursos gratuitos y navegar plataformas de empleo. Un acompañamiento real para dar el siguiente paso.</p>
+      <div class="service-tags">
+        <span class="service-tag">CV profesional</span><span class="service-tag">Búsqueda de empleo</span>
+        <span class="service-tag">Cursos online</span><span class="service-tag">LinkedIn</span>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2" style="grid-column:1/-1;background:linear-gradient(135deg,#f3e8ff 0%,#ede9fe 100%);border:2px dashed rgba(109,40,217,0.25);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <div class="service-num" style="color:var(--forest);">Servicio 05</div>
+          <span class="service-emoji"><span class="material-symbols-outlined">lightbulb</span></span>
+          <div class="service-title">¿Desempleado y querés emprender?</div>
+          <p class="service-desc" style="max-width:600px;">Si estás sin trabajo y tenés ganas de arrancar algo propio, te acompañamos gratis: te ayudamos a definir tu idea, armar un plan básico y dar los primeros pasos digitales.</p>
+          <div class="service-tags">
+            <span class="service-tag">Ideación de negocio</span><span class="service-tag">Plan de acción</span>
+            <span class="service-tag">Primeros pasos digitales</span><span class="service-tag">Mentoría básica</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;background:var(--forest);color:white;padding:0.75rem 1.5rem;border-radius:100px;font-weight:700;font-size:1rem;white-space:nowrap;align-self:center;">
+          <span class="material-symbols-outlined icon-filled">card_giftcard</span>&nbsp;Gratis
+        </div>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-delay-3" style="grid-column:1/-1;background:linear-gradient(135deg,#1a1020 0%,#2e1065 100%);border:none;color:white;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:2rem;">
+        <div>
+          <div class="service-num" style="color:rgba(200,180,255,0.5)">Servicio 06</div>
+          <span class="service-emoji"><span class="material-symbols-outlined">manage_search</span></span>
+          <div class="service-title">Auditoría de huella digital</div>
+          <p class="service-desc" style="color:rgba(255,255,255,0.65);max-width:600px;">¿Sabés qué dice Google de vos? Te mostramos todo lo que está indexado: fotos, comentarios, datos personales, redes sociales y más. Luego te ayudamos a controlarlo, eliminarlo o mejorarlo.</p>
+          <div class="service-tags" style="margin-top:1rem;">
+            <span class="service-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);">Qué sabe Google de vos</span>
+            <span class="service-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);">Derecho al olvido</span>
+            <span class="service-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);">Reputación online</span>
+            <span class="service-tag" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);">Privacidad digital</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;align-self:center;text-align:center;">
+          <a href="contacto.html" style="display:flex;align-items:center;gap:0.5rem;background:var(--terracota);color:white;padding:0.75rem 1.5rem;border-radius:100px;font-weight:700;font-size:0.9rem;white-space:nowrap;text-decoration:none;">
+            <span class="material-symbols-outlined">manage_search</span> Consultá tu caso
+          </a>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);">Primera revisión gratis</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="como">
+  <div class="section-eyebrow">El proceso</div>
+  <h2 class="section-heading">Así de simple</h2>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-title">Consultá gratis</div>
+      <p class="step-desc">Escribinos por WhatsApp, email o llamanos. Contanos qué necesitás sin ningún compromiso.</p>
+    </div>
+    <div class="step reveal reveal-delay-1">
+      <div class="step-num">2</div>
+      <div class="step-title">Te armamos un plan</div>
+      <p class="step-desc">Analizamos tu situación y te proponemos la solución más adecuada, con precio claro y sin sorpresas.</p>
+    </div>
+    <div class="step reveal reveal-delay-2">
+      <div class="step-num">3</div>
+      <div class="step-title">Lo resolvemos juntos</div>
+      <p class="step-desc">Trabajamos contigo hasta que el resultado quede exactamente como lo necesitás, con seguimiento incluido.</p>
+    </div>
+  </div>
+</section>
+
+<section id="paraquien">
+  <div class="section-eyebrow">¿Para quién?</div>
+  <h2 class="section-heading">Estamos para vos,<br/>seas quien seas</h2>
+  <div class="audience-grid">
+    <div class="audience-card reveal">
+      <span class="audience-icon-wrap" style="background:#f0ebf7;"><span class="material-symbols-outlined" style="color:#7c3aed;">storefront</span></span>
+      <div class="audience-title">Dueños de comercios</div>
+      <p class="audience-desc">Que necesitan orden en sus números y mejorar la operativa de su negocio.</p>
+    </div>
+    <div class="audience-card reveal reveal-delay-1">
+      <span class="audience-icon-wrap" style="background:#fef3c7;"><span class="material-symbols-outlined" style="color:#d97706;">rocket_launch</span></span>
+      <div class="audience-title">Emprendedores</div>
+      <p class="audience-desc">Que quieren lanzar su idea al mundo con una presencia digital profesional.</p>
+    </div>
+    <div class="audience-card reveal reveal-delay-2">
+      <span class="audience-icon-wrap" style="background:#dcfce7;"><span class="material-symbols-outlined" style="color:#16a34a;">elderly</span></span>
+      <div class="audience-title">Adultos mayores</div>
+      <p class="audience-desc">Que quieren hacer trámites sin depender de nadie y sin perder horas en filas.</p>
+    </div>
+    <div class="audience-card reveal reveal-delay-3">
+      <span class="audience-icon-wrap" style="background:#e0f2fe;"><span class="material-symbols-outlined" style="color:#0284c7;">school</span></span>
+      <div class="audience-title">Estudiantes</div>
+      <p class="audience-desc">Que buscan herramientas y orientación para encontrar su camino laboral.</p>
+    </div>
+    <div class="audience-card reveal reveal-delay-3" style="border:2px dashed rgba(109,40,217,0.3);background:linear-gradient(135deg,#f5f0ff,#ede9fe);">
+      <span class="audience-icon-wrap" style="background:rgba(109,40,217,0.1);"><span class="material-symbols-outlined" style="color:var(--forest);">lightbulb</span></span>
+      <div class="audience-title">Desempleados que quieren emprender</div>
+      <p class="audience-desc">Primera consulta y orientación inicial <strong style="color:var(--forest)">completamente gratis</strong>. Porque todos merecen una oportunidad.</p>
+    </div>
+    <div class="audience-card reveal reveal-delay-3" style="background:linear-gradient(135deg,#1a1020,#2e1065);border-color:transparent;color:white;">
+      <span class="audience-icon-wrap" style="background:rgba(255,255,255,0.1);"><span class="material-symbols-outlined" style="color:white;">manage_search</span></span>
+      <div class="audience-title" style="color:white;">Profesionales y particulares</div>
+      <p class="audience-desc" style="color:rgba(255,255,255,0.6);">Que quieren saber y controlar qué información suya circula en internet.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contacto">
+  <h2>¿Listo para dar<br/>el primer paso? <em>Hablemos.</em></h2>
+  <p>La primera consulta es completamente gratis. Sin compromiso, sin tecnicismos.</p>
+  <div class="contact-options">
+    <a href="https://wa.me/59897154271" class="contact-btn whatsapp" target="_blank">
+      <span class="material-symbols-outlined">chat</span> WhatsApp
+    </a>
+    <a href="/cdn-cgi/l/email-protection#5c35323a331c3f3332393f283d28293129323833723f3331" class="contact-btn email">
+      <span class="material-symbols-outlined">mail</span> Email
+    </a>
+    <a href="tel:097154271" class="contact-btn phone">
+      <span class="material-symbols-outlined">phone</span> 097 154 271
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo" style="height:36px;width:auto;" />
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </div>
+  <p>© 2025 ConectaTuMundo · Uruguay</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// Scroll progress
+var scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', function(){
+  var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollBar.style.width = pct + '%';
+}, {passive:true});
+
+// Nav scrolled class
+var nav = document.getElementById('mainNav');
+window.addEventListener('scroll', function(){
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, {passive:true});
+
+// Particle canvas
+(function(){
+  var canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, pts = [];
+  function resize(){ W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize, {passive:true});
+  var N = Math.min(38, Math.floor((W||800)/25));
+  for(var i=0;i<N;i++) pts.push({x:Math.random()*(W||800),y:Math.random()*(H||600),r:Math.random()*1.6+0.4,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:Math.random()*.3+.07});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(function(p){
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(167,139,191,'+p.a+')'; ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    });
+    for(var i=0;i<pts.length;i++) for(var j=i+1;j<pts.length;j++){
+      var dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.strokeStyle='rgba(109,40,217,'+(0.06*(1-d/100))+')'; ctx.lineWidth=.7; ctx.stroke(); }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Animated counters
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var el=e.target, target=parseInt(el.dataset.target), step=target/75, cur=0;
+      var t=setInterval(function(){ cur=Math.min(cur+step,target); el.textContent=Math.floor(cur); if(cur>=target)clearInterval(t); },16);
+      obs.unobserve(el);
+    });
+  },{threshold:.5});
+  document.querySelectorAll('.count-up').forEach(function(el){ obs.observe(el); });
+})();
+
+// Tilt on cards
+document.querySelectorAll('.service-card, .audience-card, .float-card').forEach(function(card){
+  card.addEventListener('mousemove', function(e){
+    var r=card.getBoundingClientRect();
+    var dx=(e.clientX-r.left-r.width/2)/r.width;
+    var dy=(e.clientY-r.top-r.height/2)/r.height;
+    card.style.transform='perspective(700px) rotateY('+(dx*7)+'deg) rotateX('+(-dy*7)+'deg) translateZ(6px) translateY(-4px)';
+  });
+  card.addEventListener('mouseleave', function(){ card.style.transform=''; });
+});
+
+// Reveal on scroll
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.08});
+  document.querySelectorAll('.reveal,.reveal-scale,.step,.audience-card').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>

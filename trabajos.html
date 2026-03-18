@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trabajos — ConectaTuMundo</title>
+  <meta name="description" content="Proyectos y trabajos realizados por ConectaTuMundo para emprendimientos uruguayos."/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf8fc; --warm: #f0ebf7; --earth: #a78bbf;
+      --forest: #6d28d9; --forest-light: #7c3aed;
+      --ink: #1a1020; --muted: #6b5b7a;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Outfit', sans-serif;
+      --pad: 1.25rem;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--ink); font-family: var(--sans); overflow-x: hidden; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem var(--pad); background: rgba(250,248,252,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(167,139,191,0.2); }
+    .logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .logo img { height: 38px; width: auto; }
+    .logo-text { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .logo-text span { color: var(--forest-light); }
+    .nav-links { display: flex; gap: 0.4rem; align-items: center; }
+    .nav-links a { font-size: 0.82rem; font-weight: 500; color: var(--muted); text-decoration: none; padding: 0.4rem 0.6rem; border-radius: 8px; display: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--forest); }
+    .nav-cta { background: var(--forest) !important; color: white !important; display: block !important; padding: 0.55rem 1.1rem !important; border-radius: 100px !important; font-weight: 600 !important; font-size: 0.8rem !important; }
+
+    /* HERO */
+    .hero { padding: 6.5rem var(--pad) 3rem; background: linear-gradient(160deg, #1a1020 0%, #2e1065 100%); position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; right: -60px; top: 50%; transform: translateY(-50%); width: 280px; height: 280px; background: radial-gradient(circle, rgba(109,40,217,0.3) 0%, transparent 70%); border-radius: 50%; }
+    .hero-inner { position: relative; z-index: 1; }
+    .eyebrow { display: inline-block; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.15); padding: 0.3rem 0.9rem; border-radius: 100px; margin-bottom: 1.2rem; }
+    .hero h1 { font-family: var(--serif); font-size: clamp(2.2rem, 8vw, 3.5rem); font-weight: 900; line-height: 1.08; color: white; margin-bottom: 1rem; }
+    .hero h1 em { font-style: italic; color: #c4b5fd; }
+    .hero p { font-size: 0.92rem; color: rgba(255,255,255,0.5); line-height: 1.8; margin-bottom: 2rem; }
+    .hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .stat-num { font-family: var(--serif); font-size: 2rem; font-weight: 900; color: white; line-height: 1; }
+    .stat-num span { color: #c4b5fd; }
+    .stat-label { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem; }
+
+    /* SECCIÓN BASE */
+    section { padding: 3.5rem var(--pad); }
+    .sec-eyebrow { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.5rem; }
+    .sec-title { font-family: var(--serif); font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 0.75rem; }
+    .sec-title em { font-style: italic; color: var(--forest); }
+    .sec-intro { font-size: 0.9rem; color: var(--muted); line-height: 1.8; margin-bottom: 1.75rem; }
+
+    /* GRID PROYECTOS */
+    .proyectos-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    .proyecto-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(167,139,191,0.18); opacity: 0; transform: translateY(20px); transition: opacity 0.55s, transform 0.55s, box-shadow 0.35s; }
+    .proyecto-card.visible { opacity: 1; transform: none; }
+    .proyecto-card:hover { box-shadow: 0 16px 50px rgba(109,40,217,0.1); }
+
+    /* IMAGEN PRINCIPAL */
+    .proyecto-img-wrap { position: relative; height: 220px; overflow: hidden; background: var(--warm); }
+    .proyecto-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; transition: transform 0.5s ease; }
+    .proyecto-img-wrap.contain img { object-fit: contain; padding: 0; background: #0d0d0d; }
+    .proyecto-card:hover .proyecto-img-wrap img { transform: scale(1.04); }
+    .proyecto-card:hover .proyecto-img-wrap.contain img { transform: scale(1.06); }
+    .proyecto-img-wrap.no-img { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f3e8ff, #ede9fe); }
+    .proyecto-img-wrap.no-img .material-symbols-outlined { font-size: 3.5rem; color: var(--earth); }
+
+    /* BADGE ESTADO */
+    .proyecto-estado { position: absolute; top: 12px; right: 12px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 100px; backdrop-filter: blur(6px); }
+    .estado-proceso { background: rgba(254,243,199,0.95); color: #92400e; }
+    .estado-live    { background: rgba(220,252,231,0.95); color: #15803d; }
+    .estado-pronto  { background: rgba(224,242,254,0.95); color: #0369a1; }
+
+    /* THUMBNAILS ADICIONALES */
+    .proyecto-thumbs { display: flex; gap: 0.4rem; padding: 0.65rem 1.4rem 0; }
+    .proyecto-thumb { width: 52px; height: 40px; border-radius: 7px; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; flex-shrink: 0; }
+    .proyecto-thumb:hover { transform: scale(1.08); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    .proyecto-thumb.active { border-color: var(--forest); }
+
+    /* CUERPO */
+    .proyecto-body { padding: 1.4rem 1.4rem 1.2rem; }
+    .proyecto-rubro { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.35rem; }
+    .proyecto-nombre { font-family: var(--serif); font-size: 1.2rem; font-weight: 900; margin-bottom: 0.5rem; line-height: 1.2; }
+    .proyecto-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.75; margin-bottom: 1rem; }
+    .proyecto-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.1rem; }
+    .ptag { background: var(--warm); color: var(--muted); font-size: 0.63rem; font-weight: 500; padding: 0.22rem 0.6rem; border-radius: 100px; }
+    .proyecto-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 0.9rem; border-top: 1px solid rgba(167,139,191,0.15); }
+    .proyecto-meta { font-size: 0.72rem; color: var(--muted); }
+    .proyecto-meta strong { color: var(--ink); }
+    .proyecto-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 600; color: var(--forest); text-decoration: none; transition: gap 0.2s; }
+    .proyecto-link:hover { gap: 0.5rem; color: var(--forest-light); }
+    .proyecto-link .material-symbols-outlined { font-size: 0.9rem; }
+
+    /* PLACEHOLDER */
+    .proyecto-card.placeholder { border: 2px dashed rgba(167,139,191,0.3); background: transparent; }
+    .proyecto-card.placeholder .proyecto-nombre { color: var(--muted); }
+
+    /* BANNER CONSTRUYENDO */
+    .building-banner { margin: 0.5rem 0; background: rgba(109,40,217,0.04); border: 1.5px dashed rgba(109,40,217,0.25); border-radius: 18px; padding: 2rem var(--pad); text-align: center; }
+    .building-banner .bb-emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .building-banner h3 { font-family: var(--serif); font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .building-banner p { font-size: 0.84rem; color: var(--muted); line-height: 1.7; }
+    .building-banner a { color: var(--forest); font-weight: 600; }
+
+    /* TESTIMONIOS */
+    .testi-section { background: var(--warm); padding: 3.5rem var(--pad); }
+    .testi-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    .testi-card { background: white; border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(167,139,191,0.15); }
+    .testi-stars { color: #f59e0b; font-size: 0.85rem; margin-bottom: 0.7rem; }
+    .testi-text { font-family: var(--serif); font-size: 0.97rem; font-style: italic; color: var(--ink); line-height: 1.6; margin-bottom: 1.1rem; }
+    .testi-author { display: flex; align-items: center; gap: 0.7rem; }
+    .testi-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--forest), var(--forest-light)); color: white; font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .testi-name { font-size: 0.82rem; font-weight: 600; }
+    .testi-role { font-size: 0.71rem; color: var(--muted); }
+    .testi-card.empty { border: 2px dashed rgba(167,139,191,0.25); background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 160px; gap: 0.5rem; }
+    .testi-card.empty p { font-size: 0.8rem; color: var(--muted); font-style: italic; line-height: 1.6; }
+
+    /* PROCESO TRABAJO */
+    .proceso-section { padding: 3.5rem var(--pad); background: var(--ink); }
+    .proceso-section .sec-eyebrow { color: #c4b5fd; }
+    .proceso-section .sec-title { color: white; }
+    .proceso-section .sec-intro { color: rgba(255,255,255,0.4); }
+    .garantias { display: flex; flex-direction: column; gap: 0.75rem; }
+    .garantia { display: flex; align-items: flex-start; gap: 0.9rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 1.1rem; }
+    .garantia-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .garantia-title { font-weight: 700; color: white; font-size: 0.9rem; margin-bottom: 0.2rem; }
+    .garantia-desc { font-size: 0.79rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+    /* CTA */
+    .cta-final { background: linear-gradient(135deg, var(--forest), var(--forest-light)); padding: 3.5rem var(--pad); text-align: center; }
+    .cta-final h2 { font-family: var(--serif); font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 900; color: white; margin-bottom: 0.75rem; line-height: 1.1; }
+    .cta-final p { font-size: 0.9rem; color: rgba(255,255,255,0.65); margin-bottom: 1.75rem; line-height: 1.7; }
+    .btn-white { display: inline-block; background: white; color: var(--forest); padding: 0.9rem 2rem; border-radius: 100px; font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-white:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); }
+
+    /* FOOTER */
+    footer { background: var(--ink); padding: 2rem var(--pad); display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+    footer .logo-text { color: white; }
+    .f-links { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; }
+    .f-links a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 0.77rem; transition: color 0.2s; }
+    .f-links a:hover { color: white; }
+    footer small { font-size: 0.72rem; color: rgba(255,255,255,0.25); }
+
+    /* TABLET+ */
+    @media (min-width: 600px) {
+      :root { --pad: 2rem; }
+      .proyectos-grid { grid-template-columns: 1fr 1fr; }
+      .testi-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 960px) {
+      :root { --pad: 4rem; }
+      nav { padding: 1.2rem var(--pad); }
+      .nav-links a { display: block; }
+      .nav-cta { font-size: 0.85rem !important; padding: 0.6rem 1.5rem !important; }
+      .proyectos-grid { grid-template-columns: repeat(3, 1fr); }
+      .testi-grid { grid-template-columns: repeat(3, 1fr); }
+      .garantias { display: grid; grid-template-columns: 1fr 1fr; }
+      footer { flex-direction: row; justify-content: space-between; text-align: left; }
+    }
+  
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
+    .service-emoji .material-symbols-outlined { font-size: 2.5rem; }
+    .audience-icon .material-symbols-outlined { font-size: 2.5rem; }
+    .float-card-icon .material-symbols-outlined { font-size: 1.8rem; }
+    .garantia-icon .material-symbols-outlined { font-size: 1.4rem; }
+    .srv-icon .material-symbols-outlined { font-size: 1.3rem; }
+    .aud-emoji .material-symbols-outlined { font-size: 1.6rem; }
+    .canal-icon .material-symbols-outlined { font-size: 1.4rem; }
+    .ubi-icon .material-symbols-outlined { font-size: 1.8rem; }
+    .bb-emoji .material-symbols-outlined { font-size: 2.5rem; }
+    .testi-card.empty .material-symbols-outlined { font-size: 1.8rem; }
+    .horario-title .material-symbols-outlined { font-size: 1rem; }
+    .form-note .material-symbols-outlined { font-size: 0.9rem; }
+
+    /* ═══════════ GLOBAL ENHANCEMENTS ═══════════ */
+
+    /* Animated gradient mesh background on body */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 50% at 10% 20%, rgba(109,40,217,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 90% 80%, rgba(167,139,191,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(124,58,237,0.03) 0%, transparent 70%);
+      animation: meshFloat 12s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes meshFloat {
+      0%   { opacity: 1; transform: scale(1) translateY(0); }
+      50%  { opacity: 0.7; transform: scale(1.04) translateY(-10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Noise texture overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      pointer-events: none;
+    }
+
+    /* Enhanced nav with progress indicator */
+    .scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--forest), var(--forest-light), #a78bbf);
+      z-index: 200;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Glow effect on nav on scroll */
+    nav.scrolled {
+      box-shadow: 0 4px 30px rgba(109,40,217,0.1);
+    }
+
+    /* Material icons: filled style for accent icons */
+    .icon-filled {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* ── SERVICE / AUDIENCE CARD MAGNETIC HOVER ── */
+    .service-card,
+    .audience-card,
+    .srv-card,
+    .proyecto-card,
+    .garantia,
+    .float-card,
+    .canal-card {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                  box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1) !important;
+    }
+
+    /* Icon wrapper pulse animation */
+    .srv-icon,
+    .step-num,
+    .canal-icon {
+      position: relative;
+    }
+    .srv-icon::after,
+    .canal-icon::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: inherit;
+      background: inherit;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      transform: scale(0.8);
+    }
+    .srv-card:hover .srv-icon::after,
+    .canal-card:hover .canal-icon::after {
+      opacity: 0.2;
+      transform: scale(1.3);
+    }
+
+    /* ── ANIMATED COUNTER NUMBERS ── */
+    .count-up {
+      display: inline-block;
+    }
+
+    /* ── STAT BAR SECTION ── */
+    .stats-bar {
+      background: var(--ink);
+      padding: 2.5rem var(--pad, 4rem);
+      display: flex;
+      gap: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .stats-bar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(109,40,217,0.15) 0%, transparent 60%);
+    }
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 1rem;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      position: relative;
+      z-index: 1;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-value {
+      font-family: var(--font-serif, 'Playfair Display', serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .stat-value span { color: #c4b5fd; }
+    .stat-label {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── MARQUEE TICKER ── */
+    .ticker-wrap {
+      background: var(--forest);
+      overflow: hidden;
+      padding: 0.7rem 0;
+      position: relative;
+    }
+    .ticker-wrap::before,
+    .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 60px;
+      z-index: 2;
+    }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--forest), transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--forest), transparent); }
+    .ticker-track {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      animation: ticker 28s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      white-space: nowrap;
+      padding: 0 2rem;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .ticker-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+
+    /* ── FLOATING PARTICLES ── */
+    .particles-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── REVEAL ANIMATIONS (enhanced) ── */
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: none; }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-right.visible { opacity: 1; transform: none; }
+
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal-scale.visible { opacity: 1; transform: none; }
+
+    /* ── HIGHLIGHT UNDERLINE ── */
+    .underline-grow {
+      position: relative;
+      display: inline;
+    }
+    .underline-grow::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 3px;
+      background: var(--terracota, #8b5cf6);
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.23,1,0.32,1) 0.3s;
+    }
+    .underline-grow.visible::after { width: 100%; }
+
+    /* ── CARD SHIMMER EFFECT ── */
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer-on-hover:hover {
+      background-image: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(255,255,255,0.06) 50%,
+        transparent 60%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    /* ── PULSE DOT ── */
+    .pulse-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      position: relative;
+    }
+    .pulse-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: #22c55e;
+      opacity: 0.4;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50%       { transform: scale(1.8); opacity: 0; }
+    }
+
+    /* ── ICON CIRCLE (hero float cards) ── */
+    .icon-circle {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      background: rgba(109,40,217,0.1);
+      color: var(--forest);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .float-card:hover .icon-circle {
+      background: var(--forest);
+      color: white;
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .wave-divider {
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+    }
+    .wave-divider svg {
+      display: block;
+      width: 100%;
+    }
+
+    /* ── GRADIENT TEXT ── */
+    .gradient-text {
+      background: linear-gradient(135deg, var(--forest) 0%, #a855f7 50%, var(--forest-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── FEATURE PILL BADGES ── */
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      letter-spacing: 0.02em;
+    }
+    .pill-badge.green  { background: #dcfce7; color: #15803d; }
+    .pill-badge.purple { background: rgba(109,40,217,0.1); color: var(--forest); }
+    .pill-badge.white  { background: rgba(255,255,255,0.15); color: white; }
+
+    /* ── SCROLL HINT ARROW ── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: scrollBounce 2s ease infinite;
+      z-index: 5;
+    }
+    .scroll-hint .material-symbols-outlined { font-size: 1.2rem; }
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+      50%       { transform: translateX(-50%) translateY(6px); opacity: 1; }
+    }
+
+    /* ── STAGGER DELAY UTILITIES ── */
+    .d1 { transition-delay: 0.05s !important; }
+    .d2 { transition-delay: 0.10s !important; }
+    .d3 { transition-delay: 0.15s !important; }
+    .d4 { transition-delay: 0.20s !important; }
+    .d5 { transition-delay: 0.25s !important; }
+    .d6 { transition-delay: 0.30s !important; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo"/>
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="servicios.html">Servicios</a>
+    <a href="trabajos.html" style="color:var(--forest);">Trabajos</a>
+    <a href="contacto.html">Contacto</a>
+    <a href="contacto.html" class="nav-cta">Consultá gratis</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Diseño web profesional</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Dashboards para pymes</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Trámites digitales</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Orientación laboral</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Hosting gratuito</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Primera consulta gratis</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Auditoría de huella digital</span><span class="ticker-dot"></span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Diseño web profesional</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Dashboards para pymes</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Trámites digitales</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Orientación laboral</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Hosting gratuito</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Primera consulta gratis</span><span class="ticker-dot"></span>
+    <span class="ticker-item"><span class="material-symbols-outlined icon-filled" style="font-size:1rem;color:rgba(255,255,255,0.6)">check_circle</span>Auditoría de huella digital</span><span class="ticker-dot"></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <canvas class="particles-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Portafolio</div>
+    <h1>Lo que hacemos<br/>habla <em>por sí solo.</em></h1>
+    <p>Proyectos reales para emprendimientos uruguayos. Cada trabajo es único y diseñado para el negocio específico.</p>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num"><span class="count-up" data-target="5">0</span><span>+</span></div>
+        <div class="stat-label">Proyectos entregados</div>
+      </div>
+      <div>
+        <div class="stat-num">5</div>
+        <div class="stat-label">Días promedio entrega</div>
+      </div>
+      <div>
+        <div class="stat-num">6</div>
+        <div class="stat-label">Revisiones incluidas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<section id="proyectos">
+  <div class="sec-eyebrow">Portafolio</div>
+  <div class="sec-title">Proyectos<br/><em>realizados</em></div>
+  <p class="sec-intro">Cada proyecto es una historia diferente. Estos son algunos de los trabajos que hemos realizado.</p>
+
+  <div class="proyectos-grid">
+
+
+    <!-- ✏️ PROYECTO 1 — Tami's -->
+    <div class="proyecto-card reveal">
+
+      <!-- IMAGEN -->
+      <div class="proyecto-img-wrap" style="background:#0d0d0d; height:260px;">
+        <img src="https://i.postimg.cc/zDHWxDTj/tamis.png" alt="Tami's" style="object-fit:cover; object-position:center center; transform:scale(1.35); transform-origin:center;">
+        <span class="proyecto-estado estado-live">En vivo</span>
+      </div>
+
+      <!-- THUMBNAILS EXTRA (opcional, máx 4): descomentá y poné tus URLs -->
+      <!--
+      <div class="proyecto-thumbs">
+        <img class="proyecto-thumb active" src="URL_THUMB_1" alt="Vista 1">
+        <img class="proyecto-thumb" src="URL_THUMB_2" alt="Vista 2">
+      </div>
+      -->
+
+      <div class="proyecto-body">
+        <div class="proyecto-rubro">Comida rápida · Restaurante</div>
+        <div class="proyecto-nombre">Tami's</div>
+        <div class="proyecto-desc">Ecosistema digital para emprendimiento local de comida rápida: menú online, pedidos por WhatsApp y presencia en redes sociales.</div>
+        <div class="proyecto-tags">
+          <span class="ptag">E-commerce</span>
+          <span class="ptag">Restaurante</span>
+          <span class="ptag">REST API</span>
+          <span class="ptag">Salinas</span>
+        </div>
+        <div class="proyecto-footer">
+          <div class="proyecto-meta">Estado: <strong>En producción</strong></div>
+          <!-- ✏️ <a href="https://..." target="_blank" class="proyecto-link">Ver sitio <span class="material-symbols-outlined">arrow_forward</span></a> -->
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ✏️ PROYECTO 2 -->
+    <div class="proyecto-card reveal">
+
+      <div class="proyecto-img-wrap no-img">
+    
+    <img src="https://i.postimg.cc/yd2k99d0/archicad.png" alt="Nombre"> 
+        <span class="proyecto-estado estado-live">En vivo</span>
+      </div>
+
+      <!-- THUMBNAILS EXTRA (opcional): descomentá y poné tus URLs -->
+      <!--
+      <div class="proyecto-thumbs">
+        <img class="proyecto-thumb active" src="URL_THUMB_1" alt="Vista 1">
+        <img class="proyecto-thumb" src="URL_THUMB_2" alt="Vista 2">
+        <img class="proyecto-thumb" src="URL_THUMB_3" alt="Vista 3">
+      </div>
+      -->
+
+      <div class="proyecto-body">
+        <div class="proyecto-rubro">Emprendimiento · Estudiante</div>
+        <div class="proyecto-nombre">ArchiCad</div>
+        <div class="proyecto-desc">sitio web para estudiante de arquitectura emprendiendo, busca vender
+          sus conocimientos en ArchiCAD Studio
+          <br>
+        </div>
+        <div class="proyecto-tags">
+          <span class="ptag">Emprendimiento</span>
+          <span class="ptag">REST API</span>
+          <span class="ptag">Ciudad de la costa</span>
+        </div>
+        <br>
+        <div class="proyecto-footer">
+          <div class="proyecto-meta">Estado: <strong>En producción</strong></div>
+          <a href="https://archicadstudio.vercel.app/" target="_blank" class="proyecto-link">Ver sitio <span class="material-symbols-outlined">arrow_forward</span></a> 
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ✏️ PROYECTO EXTRA — copiá y pegá este bloque para agregar más -->
+    <!--
+    <div class="proyecto-card reveal">
+      <div class="proyecto-img-wrap no-img">
+        <span class="material-symbols-outlined">language</span>
+        <img src="URL_IMAGEN" alt="Nombre">
+        <span class="proyecto-estado estado-live">En vivo</span>
+      </div>
+      <div class="proyecto-thumbs">
+        <img class="proyecto-thumb active" src="URL_THUMB_1" alt="">
+        <img class="proyecto-thumb" src="URL_THUMB_2" alt="">
+      </div>
+      <div class="proyecto-body">
+        <div class="proyecto-rubro">Rubro · Categoría</div>
+        <div class="proyecto-nombre">Nombre del proyecto</div>
+        <div class="proyecto-desc">Descripción breve del trabajo realizado y el resultado obtenido.</div>
+        <div class="proyecto-tags">
+          <span class="ptag">Tag 1</span>
+          <span class="ptag">Tag 2</span>
+          <span class="ptag">Localidad</span>
+        </div>
+        <div class="proyecto-footer">
+          <div class="proyecto-meta">Entregado: <strong>Mes 2025</strong></div>
+          <a href="https://..." target="_blank" class="proyecto-link">Ver sitio <span class="material-symbols-outlined">arrow_forward</span></a>
+        </div>
+      </div>
+    </div>
+    -->
+
+
+    <!-- PLACEHOLDER — "Tu negocio acá" -->
+    <div class="proyecto-card placeholder reveal">
+      <div class="proyecto-img-wrap no-img">
+        <span class="material-symbols-outlined">add_circle</span>
+      </div>
+      <div class="proyecto-body">
+        <div class="proyecto-rubro">Tu rubro</div>
+        <div class="proyecto-nombre" style="color:var(--muted);">Tu negocio acá</div>
+        <div class="proyecto-desc">Este lugar es para el próximo proyecto. ¿El tuyo?</div>
+        <div class="proyecto-tags"><span class="ptag">Landing page</span><span class="ptag">Uruguay</span></div>
+        <div class="proyecto-footer">
+          <div class="proyecto-meta">Entrega en <strong>5 días</strong></div>
+          <a href="contacto.html" class="proyecto-link">Quiero esto <span class="material-symbols-outlined">arrow_forward</span></a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /proyectos-grid -->
+
+  <div class="building-banner">
+    <div class="bb-emoji"><span class="material-symbols-outlined">rocket_launch</span></div>
+    <h3>Estamos construyendo el portafolio</h3>
+    <p>Somos un emprendimiento nuevo y buscamos los primeros proyectos con los que crecer juntos. Si tu negocio tiene potencial, nos interesa trabajar con vos. <a href="contacto.html">Hablemos <span class="material-symbols-outlined">arrow_forward</span></a></p>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+
+
+<!-- GARANTÍAS -->
+<section class="proceso-section">
+  <div class="sec-eyebrow">Por qué elegirnos</div>
+  <div class="sec-title" style="color:white;">Nuestras<br/><em>garantías</em></div>
+  <p class="sec-intro">Lo que comprometemos con cada proyecto.</p>
+  <div class="garantias">
+    <div class="garantia reveal-scale shimmer-on-hover"><div class="garantia-icon"><span class="material-symbols-outlined">check_circle</span></div><div><div class="garantia-title">6 revisiones incluidas sin costo</div><div class="garantia-desc">Hasta 6 rondas de cambios sin cobrar un peso más. Hasta que quedes conforme.</div></div></div>
+    <div class="garantia reveal-scale shimmer-on-hover"><div class="garantia-icon"><span class="material-symbols-outlined">bolt</span></div><div><div class="garantia-title">Entrega en 5 días hábiles</div><div class="garantia-desc">Una vez que tenemos todos los materiales, en 5 días hábiles el proyecto está live.</div></div></div>
+    <div class="garantia reveal-scale shimmer-on-hover"><div class="garantia-icon"><span class="material-symbols-outlined">smartphone</span></div><div><div class="garantia-title">100% mobile first</div><div class="garantia-desc">Todo lo que hacemos funciona perfecto en celular. El 90% de tus clientes entra desde el teléfono.</div></div></div>
+    <div class="garantia reveal-scale shimmer-on-hover"><div class="garantia-icon"><span class="material-symbols-outlined">lock</span></div><div><div class="garantia-title">Contrato que protege a los dos</div><div class="garantia-desc">Firmamos un contrato simple antes de arrancar. Sin sorpresas, sin letras chicas.</div></div></div>
+    <div class="garantia reveal-scale shimmer-on-hover"><div class="garantia-icon"><span class="material-symbols-outlined">chat</span></div><div><div class="garantia-title">Comunicación por WhatsApp</div><div class="garantia-desc">Te mostramos avances y respondemos dudas por WhatsApp durante todo el proyecto.</div></div></div>
+    <div class="garantia reveal-scale shimmer-on-hover"><div class="garantia-icon"><span class="material-symbols-outlined">language</span></div><div><div class="garantia-title">Dominio y hosting incluidos</div><div class="garantia-desc">El hosting es gratuito. El dominio se renueva anualmente y te avisamos con anticipación.</div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-final">
+  <h2>¿Querés ser<br/>parte del portafolio?</h2>
+  <p>Buscamos emprendimientos con futuro para trabajar juntos. Contactanos sin compromiso.</p>
+  <a href="contacto.html" class="btn-white">Quiero mi proyecto <span class="material-symbols-outlined">arrow_forward</span></a>
+</div>
+
+<footer>
+  <a href="index.html" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo" style="height:34px;width:auto;"/>
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="f-links">
+    <a href="servicios.html">Servicios</a>
+    <a href="trabajos.html">Trabajos</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <small>© 2025 ConectaTuMundo · Uruguay</small>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(e => e.forEach(en => { if (en.isIntersecting) en.target.classList.add('visible'); }), { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+<script>
+// ── Scroll progress bar
+(function(){
+  var bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', function(){
+    var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    bar.style.width = pct + '%';
+  });
+})();
+
+// ── Nav scroll class
+(function(){
+  var nav = document.querySelector('nav');
+  if(!nav) return;
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+})();
+
+// ── Magnetic / tilt card effect
+(function(){
+  document.querySelectorAll('.service-card, .audience-card, .float-card, .canal-card, .proyecto-card').forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var rect = card.getBoundingClientRect();
+      var cx = rect.left + rect.width/2;
+      var cy = rect.top + rect.height/2;
+      var dx = (e.clientX - cx) / rect.width;
+      var dy = (e.clientY - cy) / rect.height;
+      card.style.transform = 'perspective(800px) rotateY('+dx*6+'deg) rotateX('+(-dy*6)+'deg) translateZ(8px)';
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+    });
+  });
+})();
+
+// ── Animated counter
+(function(){
+  function animateCount(el, target, duration){
+    var start = 0;
+    var step = target / (duration / 16);
+    var current = 0;
+    var timer = setInterval(function(){
+      current = Math.min(current + step, target);
+      el.textContent = Math.floor(current);
+      if(current >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var el = entry.target;
+        var target = parseInt(el.dataset.target);
+        animateCount(el, target, 1200);
+        observer.unobserve(el);
+      }
+    });
+  }, {threshold: 0.5});
+
+  document.querySelectorAll('.count-up').forEach(function(el){ observer.observe(el); });
+})();
+
+// ── Reveal on scroll (universal)
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+      }
+    });
+  }, {threshold: 0.08});
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .step, .aud-card, .srv-card, .garantia, .proyecto-card, .underline-grow, .testi-card, .faq-item').forEach(function(el){
+    obs.observe(el);
+  });
+})();
+
+// ── Particle canvas (hero sections)
+(function(){
+  document.querySelectorAll('.particles-canvas').forEach(function(canvas){
+    var ctx = canvas.getContext('2d');
+    var W, H, particles = [];
+
+    function resize(){
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var N = Math.min(40, Math.floor(W / 30));
+    for(var i = 0; i < N; i++){
+      particles.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        r: Math.random()*2 + 0.5,
+        vx: (Math.random()-0.5)*0.4,
+        vy: (Math.random()-0.5)*0.4,
+        alpha: Math.random()*0.4 + 0.1
+      });
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(function(p){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(167,139,191,'+p.alpha+')';
+        ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0) p.x = W;
+        if(p.x > W) p.x = 0;
+        if(p.y < 0) p.y = H;
+        if(p.y > H) p.y = 0;
+      });
+
+      // Draw connections
+      for(var i = 0; i < particles.length; i++){
+        for(var j = i+1; j < particles.length; j++){
+          var dx = particles[i].x - particles[j].x;
+          var dy = particles[i].y - particles[j].y;
+          var dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < 120){
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = 'rgba(109,40,217,'+(0.06*(1-dist/120))+')';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  });
+})();
+// ── Thumbnail gallery switcher
+document.querySelectorAll('.proyecto-thumbs').forEach(function(thumbs){
+  thumbs.querySelectorAll('.proyecto-thumb').forEach(function(thumb){
+    thumb.addEventListener('click', function(){
+      var card = thumbs.closest('.proyecto-card');
+      var mainImg = card.querySelector('.proyecto-img-wrap img');
+      if(mainImg){
+        var prev = mainImg.src;
+        mainImg.src = thumb.src;
+        thumb.src = prev;
+        thumbs.querySelectorAll('.proyecto-thumb').forEach(function(t){ t.classList.remove('active'); });
+        thumb.classList.add('active');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
