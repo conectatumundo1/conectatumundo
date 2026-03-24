@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dónde estamos — ConectaTuMundo</title>
+  <meta name="description" content="ConectaTuMundo opera en Durazno, Chuy y Salinas. Tecnología accesible para todo Uruguay."/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #faf8fc; --warm: #f0ebf7; --earth: #a78bbf;
+      --forest: #6d28d9; --forest-light: #7c3aed;
+      --ink: #1a1020; --muted: #6b5b7a;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Outfit', sans-serif;
+      --pad: 1.25rem;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); color: var(--ink); font-family: var(--sans); overflow-x: hidden; }
+
+    /* NOISE */
+    body::after { content: ''; position: fixed; inset: 0; z-index: -1; opacity: 0.02; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 200px; pointer-events: none; }
+
+    /* SCROLL PROGRESS */
+    .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--forest), #a855f7, var(--forest-light)); z-index: 300; transition: width 0.08s linear; border-radius: 0 2px 2px 0; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem var(--pad); background: rgba(250,248,252,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(167,139,191,0.2); transition: box-shadow 0.3s; }
+    nav.scrolled { box-shadow: 0 4px 30px rgba(109,40,217,0.1); }
+    .logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .logo img { height: 38px; width: auto; }
+    .logo-text { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .logo-text span { color: var(--forest-light); }
+    .nav-links { display: flex; gap: 0.4rem; align-items: center; }
+    .nav-links a { font-size: 0.82rem; font-weight: 500; color: var(--muted); text-decoration: none; padding: 0.4rem 0.6rem; border-radius: 8px; transition: color 0.2s; display: none; }
+    .nav-links a:hover { color: var(--forest); }
+    .nav-cta { background: var(--forest) !important; color: white !important; display: block !important; padding: 0.55rem 1.1rem !important; border-radius: 100px !important; font-weight: 600 !important; font-size: 0.8rem !important; }
+    @media(min-width:640px){ .nav-links a { display: block; } }
+
+    /* TICKER */
+    .ticker-wrap { background: var(--forest); overflow: hidden; padding: 1.1rem 0; position: relative; margin-top: 60px; }
+    .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--forest) 30%, transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--forest) 30%, transparent); }
+    .ticker-track { display: flex; width: max-content; animation: ticker 30s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item { display: inline-flex; align-items: center; gap: 0.65rem; white-space: nowrap; padding: 0 2.25rem; color: rgba(255,255,255,0.9); font-size: 0.88rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .ticker-item .material-symbols-outlined { font-size: 1.1rem; font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20; color: rgba(255,255,255,0.6); }
+    .ticker-sep { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.3); flex-shrink: 0; }
+
+    /* HERO */
+    .hero { padding: 4rem var(--pad) 3rem; background: linear-gradient(160deg, var(--cream) 0%, var(--warm) 100%); position: relative; overflow: hidden; }
+    .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(109,40,217,0.07) 0%, transparent 70%); border-radius: 50%; }
+    .particles-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .hero-inner { position: relative; z-index: 2; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--forest); background: rgba(109,40,217,0.08); border: 1px solid rgba(109,40,217,0.15); padding: 0.3rem 0.9rem; border-radius: 100px; margin-bottom: 1.2rem; }
+    .hero h1 { font-family: var(--serif); font-size: clamp(2.4rem, 8vw, 3.8rem); font-weight: 900; line-height: 1.08; margin-bottom: 1rem; }
+    .hero h1 em { font-style: italic; color: var(--forest); }
+    .hero p { font-size: 1rem; color: var(--muted); line-height: 1.7; max-width: 480px; }
+
+    /* LOCATIONS */
+    .locations { padding: 4rem var(--pad) 5rem; }
+    .sec-eyebrow { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--forest); margin-bottom: 0.5rem; }
+    .sec-title { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 3rem; }
+    .sec-title em { font-style: italic; color: var(--forest); }
+
+    .loc-grid { display: grid; gap: 2rem; }
+    @media(min-width:640px){ .loc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media(min-width:960px){ .loc-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .loc-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(167,139,191,0.15);
+      box-shadow: 0 4px 24px rgba(109,40,217,0.06);
+      transition: transform 0.3s, box-shadow 0.3s;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    .loc-card.visible { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s; }
+    .loc-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(109,40,217,0.12); }
+
+    .loc-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .loc-img-placeholder {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, var(--warm) 0%, rgba(109,40,217,0.08) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--earth);
+    }
+    .loc-img-placeholder .material-symbols-outlined { font-size: 2.5rem; font-variation-settings: 'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48; }
+    .loc-img-placeholder span.loc-img-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
+
+    .loc-body { padding: 1.5rem; }
+    .loc-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--forest); background: rgba(109,40,217,0.07); border: 1px solid rgba(109,40,217,0.15);
+      padding: 0.25rem 0.75rem; border-radius: 100px; margin-bottom: 0.9rem;
+    }
+    .loc-badge .material-symbols-outlined { font-size: 0.9rem; font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20; }
+    .loc-name { font-family: var(--serif); font-size: 1.5rem; font-weight: 900; margin-bottom: 0.6rem; }
+    .loc-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.2rem; }
+    .loc-tag { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 500; color: var(--muted); background: var(--warm); padding: 0.2rem 0.65rem; border-radius: 100px; margin: 0.15rem; }
+    .loc-tag .material-symbols-outlined { font-size: 0.85rem; font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20; }
+    .loc-tags { margin-top: 0.2rem; }
+
+    /* NOTE BANNER */
+    .note-banner {
+      margin: 0 var(--pad) 4rem;
+      padding: 1.5rem 2rem;
+      background: rgba(109,40,217,0.05);
+      border: 1px solid rgba(109,40,217,0.15);
+      border-radius: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .note-banner .material-symbols-outlined { font-size: 1.4rem; color: var(--forest); flex-shrink: 0; margin-top: 0.1rem; font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24; }
+    .note-banner p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+    .note-banner strong { color: var(--ink); font-weight: 600; }
+
+    /* CTA */
+    .cta-final { background: linear-gradient(135deg, var(--forest) 0%, var(--forest-light) 100%); padding: 4rem var(--pad); text-align: center; color: white; }
+    .cta-final h2 { font-family: var(--serif); font-size: clamp(2rem, 6vw, 3rem); font-weight: 900; margin-bottom: 1rem; line-height: 1.1; }
+    .cta-final p { font-size: 1rem; opacity: 0.85; margin-bottom: 2rem; }
+    .btn-white { background: white; color: var(--forest); padding: 0.9rem 2rem; border-radius: 100px; font-weight: 600; font-size: 0.95rem; text-decoration: none; display: inline-block; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+    /* FOOTER */
+    footer { background: var(--ink); color: rgba(255,255,255,0.5); padding: 2rem var(--pad); display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+    footer .logo-text { color: white; }
+    footer .logo-text span { color: #a78bbf; }
+    .f-links { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .f-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+    .f-links a:hover { color: white; }
+    footer small { font-size: 0.75rem; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollBar"></div>
+
+<nav id="mainNav">
+  <a href="index.html" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo"/>
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="servicios.html">Servicios</a>
+    <a href="trabajos.html">Trabajos</a>
+    <a href="ubicacion.html">Dónde estamos</a>
+    <a href="contacto.html" class="nav-cta">Consultá gratis</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <div class="ticker-item"><span class="material-symbols-outlined">location_on</span>Durazno<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">location_on</span>Chuy<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">location_on</span>Salinas<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">public</span>Todo Uruguay<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">wifi</span>Soporte remoto disponible<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">location_on</span>Durazno<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">location_on</span>Chuy<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">location_on</span>Salinas<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">public</span>Todo Uruguay<div class="ticker-sep"></div></div>
+    <div class="ticker-item"><span class="material-symbols-outlined">wifi</span>Soporte remoto disponible<div class="ticker-sep"></div></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas class="particles-canvas" id="heroCanvas"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="material-symbols-outlined" style="font-size:0.9rem;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20;">location_on</span>Presencia territorial</div>
+    <h1>¿Dónde<br/><em>estamos?</em></h1>
+    <p>Operamos en tres puntos del país, con presencia presencial y soporte remoto para llegar a donde nos necesitás.</p>
+  </div>
+</section>
+
+<!-- LOCATIONS -->
+<section class="locations">
+  <div class="sec-eyebrow">Nuestras zonas</div>
+  <div class="sec-title">Tres lugares,<br/><em>una misma misión</em></div>
+
+  <div class="loc-grid">
+
+    <!-- DURAZNO -->
+
+    <div class="loc-card">
+      <img src="durazno.jpg" alt="Durazno, Uruguay" class="loc-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="loc-img-placeholder" style="display:none;">
+        <span class="material-symbols-outlined">landscape</span>
+        <span class="loc-img-label">Durazno</span>
+      </div>
+      <div class="loc-body">
+        <div class="loc-badge"><span class="material-symbols-outlined">home_pin</span>Sede principal</div>
+        <div class="loc-name">Durazno</div>
+        <p class="loc-desc">Ciudad del centro del país y corazón de nuestras operaciones. Desde acá coordinamos todos los proyectos, brindamos atención presencial y acompañamos a comercios, emprendedores y vecinos de la región que quieren dar el salto digital.</p>
+        <div class="loc-tags">
+          <span class="loc-tag"><span class="material-symbols-outlined">storefront</span>Pymes locales</span>
+          <span class="loc-tag"><span class="material-symbols-outlined">elderly</span>Adultos mayores</span>
+          <span class="loc-tag"><span class="material-symbols-outlined">handshake</span>Atención presencial</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHUY -->
+    <div class="loc-card">
+      <img src="chuy.png" alt="Chuy, Uruguay" class="loc-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="loc-img-placeholder" style="display:none;">
+        <span class="material-symbols-outlined">landscape</span>
+        <span class="loc-img-label">Chuy</span>
+      </div>
+      <div class="loc-body">
+        <div class="loc-badge"><span class="material-symbols-outlined">location_on</span>Zona este</div>
+        <div class="loc-name">Chuy</div>
+        <p class="loc-desc">Ciudad fronteriza con Brasil, en el extremo noreste del país. Un punto estratégico donde conviven dos culturas y dos mercados. Ayudamos a comerciantes y emprendedores locales a adaptarse al entorno digital en una zona con dinámicas únicas.</p>
+        <div class="loc-tags">
+          <span class="loc-tag"><span class="material-symbols-outlined">flag</span>Zona de frontera</span>
+          <span class="loc-tag"><span class="material-symbols-outlined">shopping_bag</span>Comercio local</span>
+          <span class="loc-tag"><span class="material-symbols-outlined">language</span>Contexto bilingüe</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALINAS -->
+    <div class="loc-card">
+      <img src="salinas.jpg" alt="Salinas, Uruguay" class="loc-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="loc-img-placeholder" style="display:none;">
+        <span class="material-symbols-outlined">landscape</span>
+        <span class="loc-img-label">Salinas</span>
+      </div>
+      <div class="loc-body">
+        <div class="loc-badge"><span class="material-symbols-outlined">location_on</span>Zona sur</div>
+        <div class="loc-name">Salinas</div>
+        <p class="loc-desc">Localidad costera del departamento de Canelones, a pocos kilómetros de Montevideo. Brindamos servicio a una comunidad en crecimiento donde conviven residentes permanentes y familias que buscan conectarse mejor con el mundo digital.</p>
+        <div class="loc-tags">
+          <span class="loc-tag"><span class="material-symbols-outlined">beach_access</span>Zona costera</span>
+          <span class="loc-tag"><span class="material-symbols-outlined">home</span>Comunidad residencial</span>
+          <span class="loc-tag"><span class="material-symbols-outlined">trending_up</span>En crecimiento</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- NOTE BANNER -->
+<div class="note-banner">
+  <span class="material-symbols-outlined">wifi</span>
+  <p><strong>¿No estás en ninguna de estas zonas?</strong> No es un problema. Brindamos soporte remoto por videollamada, WhatsApp y correo electrónico para cualquier punto de Uruguay. La tecnología no tiene fronteras, y nosotros tampoco.</p>
+</div>
+
+<!-- CTA -->
+<div class="cta-final">
+  <h2>¿Estás cerca?<br/>Hablemos.</h2>
+  <p>La primera consulta es completamente gratis, presencial o por videollamada.</p>
+  <a href="contacto.html" class="btn-white">Contactanos →</a>
+</div>
+
+<footer>
+  <a href="index.html" class="logo">
+    <img src="https://i.postimg.cc/WDmm9DS6/favicon.png" alt="ConectaTuMundo" style="height:34px;width:auto;"/>
+    <span class="logo-text">Conecta<span>TuMundo</span></span>
+  </a>
+  <div class="f-links">
+    <a href="servicios.html">Servicios</a>
+    <a href="trabajos.html">Trabajos</a>
+    <a href="ubicacion.html">Dónde estamos</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <small>© 2025 ConectaTuMundo · Uruguay</small>
+</footer>
+
+<script>
+// Scroll progress
+var scrollBar = document.getElementById('scrollBar');
+window.addEventListener('scroll', function(){
+  var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  scrollBar.style.width = pct + '%';
+}, {passive:true});
+
+// Nav scrolled
+var nav = document.getElementById('mainNav');
+window.addEventListener('scroll', function(){
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, {passive:true});
+
+// Particle canvas
+(function(){
+  var canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W, H, pts = [];
+  function resize(){ W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener('resize', resize, {passive:true});
+  var N = Math.min(30, Math.floor((W||800)/28));
+  for(var i=0;i<N;i++) pts.push({x:Math.random()*(W||800),y:Math.random()*(H||400),r:Math.random()*1.5+0.4,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:Math.random()*.25+.06});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(function(p){
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(167,139,191,'+p.a+')'; ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    });
+    for(var i=0;i<pts.length;i++) for(var j=i+1;j<pts.length;j++){
+      var dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90){ ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.strokeStyle='rgba(109,40,217,'+(0.05*(1-d/90))+')'; ctx.lineWidth=.6; ctx.stroke(); }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Reveal on scroll
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:.08});
+  document.querySelectorAll('.loc-card').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>
